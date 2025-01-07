@@ -453,9 +453,9 @@ config my-dnshelper
     option app_check '1'
     list url 'https://fastly.jsdelivr.net/gh/privacy-protection-tools/anti-AD@master/adblock-for-dnsmasq.conf'
     list url 'https://fastly.jsdelivr.net/gh/AdguardTeam/AdGuardSDNSFilter@gh-pages/Filters/filter.txt'
-    list url 'https://fastly.jsdelivr.net/gh/Cats-Team/AdRules/hosts.txt'
-    list url 'https://fastly.jsdelivr.net/gh/VeleSila/yhosts/hosts.txt'
-    list url 'https://fastly.jsdelivr.net/gh/kongfl888/ad-rules/malhosts.txt'
+#    list url 'https://fastly.jsdelivr.net/gh/Cats-Team/AdRules/hosts.txt'
+#    list url 'https://fastly.jsdelivr.net/gh/VeleSila/yhosts/hosts.txt'
+#    list url 'https://fastly.jsdelivr.net/gh/kongfl888/ad-rules/malhosts.txt'
 " > /etc/config/my-dnshelper
 
 /etc/init.d/my-dnshelper enable
@@ -777,6 +777,17 @@ config zerotier 'sample_config'
 /etc/init.d/zerotier start
 
 
+echo "增加设置zerotier mac地址  mtu"
+echo "
+
+config device
+    option name 'ztc25dx6ge'
+    option mtu '1500'
+    option macaddr '00:11:22:33:44:55'
+
+" >>/etc/config/network
+
+/etc/init.d/network restart
 
 
 
@@ -811,9 +822,6 @@ config user
 echo "启动 unishare"
 /etc/init.d/unishare enable
 /etc/init.d/unishare restart
-
-
-
 
 
 
@@ -904,7 +912,7 @@ echo "config openvpn 'myvpn'
     option client_cert_not_required '1'
         list push 'route 192.168.1.0 255.255.255.0'
         list push 'route 192.168.10.0 255.255.255.0'
-        list push 'route 10.8.0.0 255.255.255.0'
+        list push 'route 100.100.0.0 255.255.255.0'
         list push 'dhcp-option DNS 192.168.10.1'
 
 config openvpnclient
@@ -1378,8 +1386,6 @@ EOF
 # 将脚本内容写入文件并设置权限
 echo "$script_content" > /etc/init.d/openvpn
 chmod +x /etc/init.d/openvpn
-
-
 
 
 echo "生成openvpn证书"
