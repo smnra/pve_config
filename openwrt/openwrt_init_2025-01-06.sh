@@ -783,7 +783,7 @@ echo "
 config device
     option name 'ztc25dx6ge'
     option mtu '1500'
-    option macaddr '00:11:22:33:44:55'
+    option macaddr '82:87:e5:94:d1:36'
 
 " >>/etc/config/network
 
