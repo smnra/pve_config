@@ -10,14 +10,14 @@ function strInFile(){
 # 此函数用于判断字符串是否存在于文件中
 str=$1
 filename=$2
-#   if cat ${filename} |grep \"${str}\" > /dev/null 
-    if [ `grep -c "${str}" ${filename}` -ne 0 ];then 
+#   if cat ${filename} |grep \"${str}\" > /dev/null
+    if [ `grep -c "${str}" ${filename}` -ne 0 ];then
         echo 0
         return 0;
     else
         echo 1
         return 1;
-    fi  
+    fi
 }
 
 
@@ -27,15 +27,15 @@ filename=$2
 
 ################################################################################
 echo "修改/dev/sda3挂载为 /data, 当前 分区挂载情况:"
-lsblk -o NAME,FSTYPE,UUID,MOUNTPOINT 
+lsblk -o NAME,FSTYPE,UUID,MOUNTPOINT
 mkdir -p /data
 
 result=`strInFile "option target '/data'" '/etc/config/fstab'`
-if [ ${result} == 1 ] 
+if [ ${result} == 1 ]
 then
     echo "修改 /etc/config/fstab 文件中的挂载点/mnt/sda3 为 /data"
     sed -i "s|option target '/mnt/sda3'|option target '/data'|"  "/etc/config/fstab"
-    
+
     # 启用挂载项（如果有需要）
     sed -i "s|option enabled '0'|option enabled '1'|" "/etc/config/fstab"
 
@@ -45,11 +45,11 @@ then
     echo "应用挂载点"
     block mount
 else
-    echo "已找到挂载点 /data : option target '/data' ,未修改 /etc/config/network" 
+    echo "已找到挂载点 /data : option target '/data' ,未修改 /etc/config/network"
 fi
 
 echo "修改完成, 分区挂载情况:"
-lsblk -o NAME,FSTYPE,UUID,MOUNTPOINT 
+lsblk -o NAME,FSTYPE,UUID,MOUNTPOINT
 
 
 
@@ -100,12 +100,12 @@ echo 'opkg update'
 opkg update
 
 echo '无线网卡 mt7921e 软件包安装.   bypass'
-# opkg install iw-full kmod-mt7921e hostapd-openssl 
+# opkg install iw-full kmod-mt7921e hostapd-openssl
 
 opkg install wol etherwake luci-app-wol luci-i18n-wol-zh-cn
 opkg install iptvhelper
-# opkg install zerotier luci-app-zerotier 
-# opkg install luci-app-dufs
+# opkg install zerotier luci-app-zerotier
+# opkg install headscale
 # opkg install vlmcsd luci-app-vlmcsd
 ##################################################################################################
 
@@ -125,9 +125,9 @@ uci commit luci
 echo '开机启动 /etc/rc.local'
 result=`strInFile 'ddns_update.sh' '/etc/rc.local'`
 echo result: ${result}
-if [ ${result} == 1 ] 
-then 
-    echo '开始修改 /etc/rc.local' 
+if [ ${result} == 1 ]
+then
+    echo '开始修改 /etc/rc.local'
     echo '
 # Put your custom commands here that should be executed once
 # the system init finished. By default this file does nothing.
@@ -138,8 +138,8 @@ ping  127.0.0.1 -c 60 && sh /root/ddns_update.sh  >> /data/log/ddns_update.log &
 
 exit 0
 ' > /etc/rc.local
-else 
-    echo '已找到rc.local 未修改/etc/rc.local' 
+else
+    echo '已找到rc.local 未修改/etc/rc.local'
 fi
 
 
@@ -151,10 +151,10 @@ fi
 echo '添加到光猫的接口 wan_gpon /etc/config/network'
 
 result=`strInFile "config interface 'wan_gpon'" '/etc/config/network'`
-echo result: ${result} 
-if [ ${result} == 1 ] 
-then 
-    echo '开始修改 /etc/config/network' 
+echo result: ${result}
+if [ ${result} == 1 ]
+then
+    echo '开始修改 /etc/config/network'
     echo "
 config interface 'wan_gpon'
     option device 'eth1'
@@ -173,16 +173,16 @@ fi
 
 ########################################################################################################
 
-echo '添加静态路由' 
+echo '添加静态路由'
 result=`strInFile "option interface 'wan_gpon'" '/etc/config/network'`
-if [ ${result} == 1 ] 
+if [ ${result} == 1 ]
 then
     echo '开始修改 /etc/config/network'
     echo "
 config route
     option interface 'vpn0'
-    option target '10.8.0.0/24'
-    option gateway '10.8.0.1'
+    option target '100.100.0.0/16'
+    option gateway '100.100.0.1'
 
 config route
     option interface 'wan_gpon'
@@ -406,6 +406,15 @@ config redirect
 config redirect
     option dest 'lan'
     option target 'DNAT'
+    option name 'openvpn'
+    option src 'wan'
+    option src_dport '1122'
+    option dest_ip '192.168.10.1'
+    option dest_port '1122'
+
+config redirect
+    option dest 'lan'
+    option target 'DNAT'
     option name 'webdav'
     option src 'wan'
     option src_dport '8101'
@@ -472,7 +481,7 @@ config wifi-device 'radio0'
     option cell_density '3'
     option noscan '1'
     option vendor_vht '1'
-    option band '5g'  
+    option band '5g'
     option channel '40'
     option txpower '27'
 
@@ -494,7 +503,7 @@ wifi reload
 
 
 ###############################################################################
-echo '设置DDNS 更新'  
+echo '设置DDNS 更新'
 # 删除源有配置
 uci del ddns.myddns_ipv4
 uci del ddns.myddns_ipv6
@@ -673,9 +682,9 @@ echo "启动 ddns 脚本内容"
 ############################################################################################################################
 # 计划任务 crontab 添加ddns 每小时更新; 每天凌晨4点重启系统; 每小时释放内存;
 
-echo 'Crontab  添加ddns 每小时更新ddns' 
+echo 'Crontab  添加ddns 每小时更新ddns'
 result=`strInFile "ddns_update.sh" '/etc/crontabs/root'`
-if [ ${result} == 1 ] 
+if [ ${result} == 1 ]
 then
     echo "
 0  0 * * * /bin/sh /data/app/ddns/ddns_update.sh  >> /data/log/ddns_update.log &" >> /etc/crontabs/root
@@ -683,15 +692,15 @@ fi
 
 echo 'Crontab 添加 每小时释放内存;'
 result=`strInFile "ram_release" '/etc/crontabs/root'`
-if [ ${result} == 1 ] 
+if [ ${result} == 1 ]
 then
     echo "
 00 03 * * * /usr/bin/ram_release.sh release" >> /etc/crontabs/root
 fi
 
-echo 'Crontab 添加 每天凌晨4点重启系统;' 
+echo 'Crontab 添加 每天凌晨4点重启系统;'
 result=`strInFile "reboot" '/etc/crontabs/root'`
-if [ ${result} == 1 ] 
+if [ ${result} == 1 ]
 then
     echo "
 00 4 * * * sleep 10 && touch /etc/banner && reboot" >> /etc/crontabs/root
@@ -706,7 +715,7 @@ fi
 #############################################################################################
 echo '配置 应用过滤 '
 result=`strInFile "option enable '1'" '/etc/config/appfilter'`
-if [ ${result} == 1 ] 
+if [ ${result} == 1 ]
 then
     echo '开始修改 /etc/config/appfilter'
     echo "
@@ -739,7 +748,7 @@ config user 'user'
 
 " >> /etc/config/appfilter
 else
-    echo "已找到 option enable '1',未修改 /etc/config/appfilter" 
+    echo "已找到 option enable '1',未修改 /etc/config/appfilter"
 fi
 
 echo "启动 appfilter"
@@ -873,8 +882,8 @@ echo "config openvpn 'myvpn'
     option proto 'tcp4'
     option dev 'tun'
     option topology 'subnet'
-    option server '10.8.0.0 255.255.255.0'
-    option comp_lzo 'adaptive'
+    option server '100.100.0.0 255.255.255.0'
+    option comp_lzo 'yes'
     option ca '/etc/openvpn/pki/ca.crt'
     option dh '/etc/openvpn/pki/dh.pem'
     option cert '/etc/openvpn/pki/server.crt'
@@ -909,6 +918,12 @@ config openvpnclientstop
 " > /etc/config/openvpn
 
 
+echo "生成 openvpn 客户端天健配置 "
+echo "
+comp-lzo
+tun-mtu 1500
+auth-user-pass user.txt
+"> /etc/ovpnadd.conf
 
 
 echo "生成 openvpn  帐号文件"
@@ -918,7 +933,7 @@ echo "smnra smnra000
 
 
 echo "生成 openvpn 帐号检查脚本 /etc/openvpn/server/checkpsw.sh"
-# 定义 checkpsw.sh 脚本内容 
+# 定义 checkpsw.sh 脚本内容
 script_content=$(cat << 'EOF'
 #!/bin/sh
 ###########################################################
@@ -969,7 +984,7 @@ chmod +x /etc/openvpn/server/checkpsw.sh
 
 
 echo "生成 openvpn 证书自动生成脚本 /etc/openvpn/server/openvpncert.sh"
-# 定义 openvpncert.sh 脚本内容 
+# 定义 openvpncert.sh 脚本内容
 script_content=$(cat << 'EOF'
 #!/bin/sh
 
@@ -1046,7 +1061,7 @@ chmod +x /etc/openvpn/server/openvpncert.sh
 
 
 echo "生成 openvpn 服务启动脚本 /etc/init.d/openvpn"
-# 定义openvpn 脚本内容 
+# 定义openvpn 脚本内容
 script_content=$(cat << 'EOF'
 #!/bin/sh /etc/rc.common
 # Copyright (C) 2008-2013 OpenWrt.org
