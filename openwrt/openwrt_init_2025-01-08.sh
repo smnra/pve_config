@@ -371,7 +371,7 @@ fi
 
 
 #######################################################################
-echo '防火墙规则'
+echo '防火墙规则 80** 端口为 lan 网段映射  81** 为openwrt内部端口的映射   82** 为docker端口的映射  最后一位为 ip地址尾数'
 echo "
 config redirect
     option dest 'lan'
@@ -468,7 +468,7 @@ config redirect
     option target 'DNAT'
     option name 'iRouter_web'
     option src 'wan'
-    option src_dport '8204'
+    option src_dport '8254'
     option dest_ip '192.168.10.254'
     option dest_port '443'
 
@@ -504,19 +504,45 @@ config redirect
     option target 'DNAT'
     option name 'twonav'
     option src 'wan'
-    option src_dport '8102'
+    option src_dport '8202'
     option dest_ip '192.168.10.1'
-    option dest_port '5000'
+    option dest_port '8202'
 
 config redirect
     option dest 'lan'
     option target 'DNAT'
-    option name 'docker_flask'
+    option name 'docker_flask_2222'
     option src 'wan'
-    option src_dport '8103'
+    option src_dport '8203'
     option dest_ip '192.168.10.1'
-    option dest_port '8780'
+    option dest_port '8203'
 
+config redirect
+    option dest 'lan'
+    option target 'DNAT'
+    option name 'docker_flask_8780'
+    option src 'wan'
+    option src_dport '8213'
+    option dest_ip '192.168.10.1'
+    option dest_port '8213'
+
+config redirect
+    option dest 'lan'
+    option target 'DNAT'
+    option name 'docker_flask_5000'
+    option src 'wan'
+    option src_dport '8223'
+    option dest_ip '192.168.10.1'
+    option dest_port '8223'
+
+config redirect
+    option dest 'lan'
+    option target 'DNAT'
+    option name 'mi-gpt'
+    option src 'wan'
+    option src_dport '8204'
+    option dest_ip '192.168.10.1'
+    option dest_port '8204'
 
 " >> /etc/config/firewall
 
