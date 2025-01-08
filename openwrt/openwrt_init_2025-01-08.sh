@@ -125,8 +125,8 @@ uci commit luci
 echo "设置 web访问 控制列表"
 echo "
     allow all;
-    allow 123.138.78.0/24
-    allow 100.100.0.0/16
+    allow 123.138.78.0/24;
+    allow 100.100.0.0/16;
     allow ::1;
     allow fc00::/7;
     allow fec0::/10;
@@ -493,6 +493,25 @@ config redirect
     option src_dport '8101'
     option dest_ip '192.168.10.1'
     option dest_port '25544'
+
+config redirect
+    option dest 'lan'
+    option target 'DNAT'
+    option name 'twonav'
+    option src 'wan'
+    option src_dport '8102'
+    option dest_ip '192.168.10.1'
+    option dest_port '5000'
+
+config redirect
+    option dest 'lan'
+    option target 'DNAT'
+    option name 'docker_flask'
+    option src 'wan'
+    option src_dport '8103'
+    option dest_ip '192.168.10.1'
+    option dest_port '8780'
+
 
 " >> /etc/config/firewall
 
