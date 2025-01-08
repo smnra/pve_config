@@ -1010,6 +1010,7 @@ echo "config openvpn 'myvpn'
         list push 'route 192.168.1.0 255.255.255.0'
         list push 'route 192.168.10.0 255.255.255.0'
         list push 'route 100.100.0.0 255.255.255.0'
+        list push 'route 100.100.1.0 255.255.255.0'
         list push 'dhcp-option DNS 192.168.10.1'
 
 config openvpnclient
