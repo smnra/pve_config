@@ -124,8 +124,9 @@ uci commit luci
 #####################################################################################
 echo "设置 web访问 控制列表"
 echo "
-    allow 123.138.78.0/24
-    allow 100.100.0.0/16
+    allow all;
+    allow 123.138.78.0/24;
+    allow 100.100.0.0/16;
     allow ::1;
     allow fc00::/7;
     allow fec0::/10;
@@ -154,6 +155,13 @@ then
 # Put your custom commands here that should be executed once
 # the system init finished. By default this file does nothing.
 
+sleep 10
+
+# 修改 ZeroTier 接口mac地址  无效
+ip link set dev ztc25dx6ge down
+ip link set dev ztc25dx6ge address 00:11:22:33:44:02
+ip link set dev ztc25dx6ge up
+
 #DDNS 更新
 ping  127.0.0.1 -c 60 && sh /root/ddns_update.sh  >> /data/log/ddns_update.log &
 
@@ -168,26 +176,70 @@ fi
 
 
 
-########################################################################################
 
-echo '添加到光猫的接口 wan_gpon /etc/config/network'
-
-result=`strInFile "config interface 'wan_gpon'" '/etc/config/network'`
+##################################################################################
+echo '添加到光猫的接口lan_gpon,并配置为dhcp获取ip,并设置mac地址:00:11:22:33:44:01.'
+result=`strInFile "config interface 'lan_gpon'" '/etc/config/network'`
 echo result: ${result}
 if [ ${result} == 1 ]
 then
-    echo '开始修改 /etc/config/network'
     echo "
-config interface 'wan_gpon'
+config interface 'lan_gpon'
+    option proto 'dhcp'
     option device 'eth1'
-    option proto 'static'
-    option ipaddr '192.168.1.2'
-    option netmask '255.255.255.0'
-    option gateway '192.168.1.1'
+    option mtu '1500'
+    option macaddr '00:11:22:33:44:01'
+    option defaultroute '0'
+
+" >> /etc/config/network
+
+
+    echo "lan_gpon接口防火墙区域为 lan"
+    result=`strInFile "list network 'lan_gpon'" '/etc/config/firewall'`
+    echo result: ${result}
+    if [ ${result} == 1 ]
+        then
+        sed -i "s/list network 'lan'/list network 'lan'\n\tlist network 'lan_gpon' /g" /etc/config/firewall
+    else
+        echo "lan_gpon接口的防火墙区域已设置,不修改."
+    fi
+
+else
+    echo "已找到 config interface 'lan_gpon' ,未修改 /etc/config/network" >> /root/系统初始化设置.log
+fi
+
+
+
+
+
+
+
+########################################################################################
+
+echo '设置 zerotier的接口 ztc25dx6ge mac地址:00:11:22:33:44:02, mtu:1500,  貌似无效'
+
+result=`strInFile "config interface 'ztc25dx6ge'" '/etc/config/network'`
+echo result: ${result}
+if [ ${result} == 1 ]
+then
+    echo "
+
+config device
+    option name 'ztc25dx6ge'
+    option mtu '1500'
+    option macaddr '00:11:22:33:44:02'
+
 " >> /etc/config/network
 else
-    echo "已找到 config interface 'wan_gpon' ,未修改 /etc/config/network" >> /root/系统初始化设置.log
+    echo "已找到 config interface 'lan_gpon' ,未修改 /etc/config/network" >> /root/系统初始化设置.log
 fi
+
+/etc/init.d/network restart
+
+
+
+
+
 
 
 
@@ -196,7 +248,7 @@ fi
 ########################################################################################################
 
 echo '添加静态路由'
-result=`strInFile "option interface 'wan_gpon'" '/etc/config/network'`
+result=`strInFile "option interface 'lan_gpon'" '/etc/config/network'`
 if [ ${result} == 1 ]
 then
     echo '开始修改 /etc/config/network'
@@ -207,15 +259,14 @@ config route
     option gateway '100.100.0.1'
 
 config route
-    option interface 'wan_gpon'
+    option interface 'lan_gpon'
     option target '192.168.1.0/24'
-    option gateway '192.168.1.20'
+    option gateway '192.168.1.1'
+
 " >> /etc/config/network
 else
-    echo "已找到 option interface 'wan_gpon',未修改 /etc/config/network"
+    echo "已找到 option interface 'lan_gpon',未修改 /etc/config/network"
 fi
-
-
 
 
 
@@ -442,6 +493,25 @@ config redirect
     option src_dport '8101'
     option dest_ip '192.168.10.1'
     option dest_port '25544'
+
+config redirect
+    option dest 'lan'
+    option target 'DNAT'
+    option name 'twonav'
+    option src 'wan'
+    option src_dport '8102'
+    option dest_ip '192.168.10.1'
+    option dest_port '5000'
+
+config redirect
+    option dest 'lan'
+    option target 'DNAT'
+    option name 'docker_flask'
+    option src 'wan'
+    option src_dport '8103'
+    option dest_ip '192.168.10.1'
+    option dest_port '8780'
+
 
 " >> /etc/config/firewall
 
@@ -799,17 +869,17 @@ config zerotier 'sample_config'
 /etc/init.d/zerotier start
 
 
-echo "增加设置zerotier mac地址  mtu"
-echo "
+#echo "增加设置zerotier mac地址  mtu"
+#echo "
+#
+#config device
+#    option name 'ztc25dx6ge'
+#    option mtu '1500'
+#    option macaddr '82:87:e5:94:d1:36'
+#
+#" >>/etc/config/network
 
-config device
-    option name 'ztc25dx6ge'
-    option mtu '1500'
-    option macaddr '82:87:e5:94:d1:36'
-
-" >>/etc/config/network
-
-/etc/init.d/network restart
+# /etc/init.d/network restart
 
 
 
