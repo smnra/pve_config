@@ -178,7 +178,7 @@ fi
 
 
 ##################################################################################
-echo '添加到光猫的接口lan_gpon,并配置为dhcp获取ip,并设置mac地址:00:11:22:33:44:01.'
+echo '添加到光猫的接口lan_gpon,并配置为dhcp获取ip,并设置mac地址:00:11:22:33:00:01.'
 result=`strInFile "config interface 'lan_gpon'" '/etc/config/network'`
 echo result: ${result}
 if [ ${result} == 1 ]
@@ -188,7 +188,7 @@ config interface 'lan_gpon'
     option proto 'dhcp'
     option device 'eth1'
     option mtu '1500'
-    option macaddr '00:11:22:33:44:01'
+    option macaddr '00:11:22:33:00:01'
     option defaultroute '0'
 
 " >> /etc/config/network
