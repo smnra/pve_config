@@ -263,6 +263,11 @@ config route
     option target '192.168.1.0/24'
     option gateway '192.168.1.1'
 
+config route
+    option interface 'lan'
+    option target '100.100.1.0/24'
+    option gateway '192.168.10.254'
+
 " >> /etc/config/network
 else
     echo "已找到 option interface 'lan_gpon',未修改 /etc/config/network"
