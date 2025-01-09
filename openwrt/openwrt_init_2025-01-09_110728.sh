@@ -103,6 +103,7 @@ echo '无线网卡 mt7921e 软件包安装.   bypass'
 # opkg install iw-full kmod-mt7921e hostapd-openssl
 
 opkg install wol etherwake luci-app-wol luci-i18n-wol-zh-cn
+opkg Install docker-compose
 opkg install iptvhelper
 # opkg install zerotier luci-app-zerotier
 # opkg install headscale
@@ -1535,9 +1536,18 @@ sleep 10
 
 # ###############################################################################################
 echo "下载docker_data 数据包并解压"
-wget -c -U "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" -O /data/docker/docker_data.zip  https://smnra.github.io/pve_config/docker/docker.zip
-unzip -o -P 'smnra000' /data/docker/docker_data.zip -d /data/docker/ > /dev/null
-rm -f /data/docker/docker_data.zip
+wget -c -O /data/docker/docker_data.zip  https://smnra.github.io/pve_config/docker/docker_data.tar.gz
+
+cd /data/docker/
+tar -zxvf docker_data.tar.gz
+mv all_docker-compose.yaml /data/docker/docker_data/all_docker-compose.yml
+rm -f  docker_data.tar.gz
+
+
+echo "docker 镜像下载"
+docker pull tznb/twonav:latest
+docker pull idootop/mi-gpt:latest
+docker pull smnrao/python_flask_docker:latest
 
 echo "启动docker-compose 服务"
 cd  /data/docker/docker_data/

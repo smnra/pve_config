@@ -20,7 +20,7 @@ services:
     image: tznb/twonav:latest
     container_name: "twonav"
     volumes:
-      - '/data/docker_data/twonav/www:/www'
+      - '/data/docker/docker_data/twonav/www:/www'
     restart: unless-stopped
     user: 0:0
     networks:
@@ -43,7 +43,7 @@ services:
       - "8213:8780"
       - "8223:5000"
     volumes:
-      - "/data/docker_data/python_flask_docker/app:/app"
+      - "/data/docker/docker_data/python_flask_docker/app:/app"
 
 
   mi-gpt:
@@ -57,12 +57,12 @@ services:
       - 8204:3000
     volumes:
       - "/etc/localtime:/etc/localtime"
-      - "/data/docker_data/mi-gpt/run.sh:/app/run.sh"
-      - "/data/docker_data/mi-gpt/.migpt.js:/app/.migpt.js"
-      - "/data/docker_data/mi-gpt/mi-gpt-tts-3.0.0:/app/mi-gpt-tts-3.0.0"
-      - "/data/docker_data/mi-gpt/one-api:/app/one-api"
+      - "/data/docker/docker_data/mi-gpt/run.sh:/app/run.sh"
+      - "/data/docker/docker_data/mi-gpt/.migpt.js:/app/.migpt.js"
+      - "/data/docker/docker_data/mi-gpt/mi-gpt-tts-3.0.0:/app/mi-gpt-tts-3.0.0"
+      - "/data/docker/docker_data/mi-gpt/one-api:/app/one-api"
     env_file:
-      - /data/docker_data/mi-gpt/.env
+      - /data/docker/docker_data/mi-gpt/.env
     command: sh -c "cd /app/ && sh /app/run.sh "
 
 
@@ -73,8 +73,8 @@ services:
 #    privileged: true
 #    stop_signal: SIGINT
 #    volumes:
-#      - /data/docker_data/iventoy/iso:/app/iso
-#      - /data/docker_data/iventoy/data:/app/data
+#      - /data/docker/docker_data/iventoy/iso:/app/iso
+#      - /data/docker/docker_data/iventoy/data:/app/data
 #    network_mode: "host"
 
 
@@ -97,10 +97,10 @@ services:
 #      - CUPSPASSWORD=smnra000
 #      - TZ="America/Gotham"
 #    volumes:
-#      - /data/docker_data/airprint/cups:/etc/cups
-#      - /data/docker_data/airprint/var/cache/cups:/var/cache/cups
-#      - /data/docker_data/airprint/var/log/cups:/var/log/cups
-#      - /data/docker_data/airprint/var/spool/cups:/var/spool/cups
+#      - /data/docker/docker_data/airprint/cups:/etc/cups
+#      - /data/docker/docker_data/airprint/var/cache/cups:/var/cache/cups
+#      - /data/docker/docker_data/airprint/var/log/cups:/var/log/cups
+#      - /data/docker/docker_data/airprint/var/spool/cups:/var/spool/cups
 #
 
 
@@ -114,7 +114,7 @@ services:
 #        ipv4_address: "172.20.0.6"
 ##        ipv6_address: "240e:35c:7fa:c900:1::6"
 #    volumes:
-#      - /data/docker_data/next-terminal/data:/usr/local/next-terminal/data
+#      - /data/docker/docker_data/next-terminal/data:/usr/local/next-terminal/data
 #    restart: always
 #
 #  next-terminal:
@@ -133,7 +133,7 @@ services:
 #      - "8207:8088"
 #    volumes:
 #      - /etc/localtime:/etc/localtime
-#      - /data/docker_data/next-terminal/data:/usr/local/next-terminal/data
+#      - /data/docker/docker_data/next-terminal/data:/usr/local/next-terminal/data
 #    restart: always
 
 
