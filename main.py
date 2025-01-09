@@ -5,6 +5,9 @@ def generate_directory_tree_html(path, output_file="index.html", exclude_dirs=No
     if exclude_dirs is None:
         exclude_dirs = []
 
+    if os.path.exists(output_file):
+        os.remove(output_file)  # 删除已存在的 index.html 文件
+
     # 打开文件准备写入
     with open(output_file, "w", encoding="utf-8") as f:
         # 写入 HTML 头部
@@ -49,6 +52,7 @@ def generate_directory_tree_html(path, output_file="index.html", exclude_dirs=No
     print(f"目录结构已生成到文件: {output_file}")
 
 if __name__ == '__main__':
+
     # 指定不生成的目录
     exclude_directories = ['.idea', '.git']  # 修改为你想要排除的目录名
     # 调用函数生成目录结构 HTML 文件
