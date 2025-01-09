@@ -1,16 +1,56 @@
-# 这是一个示例 Python 脚本。
+import os
 
-# 按 Shift+F10 执行或将其替换为您的代码。
-# 按 双击 Shift 在所有地方搜索类、文件、工具窗口、操作和设置。
+def generate_directory_tree_html(path, output_file="index.html", exclude_dirs=None):
+    # 默认不生成的目录列表
+    if exclude_dirs is None:
+        exclude_dirs = []
 
+    # 打开文件准备写入
+    with open(output_file, "w", encoding="utf-8") as f:
+        # 写入 HTML 头部
+        f.write("<!DOCTYPE html>\n")
+        f.write("<html lang='zh-CN'>\n")
+        f.write("<head>\n")
+        f.write("    <meta charset='UTF-8'>\n")
+        f.write("    <title>目录结构</title>\n")
+        f.write("</head>\n")
+        f.write("<body>\n")
+        f.write("    <h1>目录结构</h1>\n")
+        f.write("    <ul>\n")
 
-def print_hi(name):
-    # 在下面的代码行中使用断点来调试脚本。
-    print(f'Hi, {name}')  # 按 Ctrl+F8 切换断点。
+        # 递归遍历目录
+        def write_directory_tree(directory, indent_level=0):
+            # 遍历当前目录
+            for item in sorted(os.listdir(directory)):
+                full_path = os.path.join(directory, item)
+                # 检查是否在排除列表中
+                if item in exclude_dirs:
+                    continue
 
+                # 如果是目录，递归处理
+                if os.path.isdir(full_path):
+                    f.write(f"{'    ' * (indent_level + 1)}<li><strong>{item}/</strong></li>\n")
+                    f.write(f"{'    ' * (indent_level + 1)}<ul>\n")
+                    write_directory_tree(full_path, indent_level + 1)
+                    f.write(f"{'    ' * (indent_level + 1)}</ul>\n")
+                # 如果是文件，生成超链接
+                else:
+                    file_url = full_path.replace("\\", "/")  # 处理 Windows 路径
+                    f.write(f"{'    ' * (indent_level + 1)}<li><a href='{file_url}'>{item}</a></li>\n")
 
-# 按装订区域中的绿色按钮以运行脚本。
+        # 开始遍历
+        write_directory_tree(path)
+
+        # 写入 HTML 尾部
+        f.write("    </ul>\n")
+        f.write("</body>\n")
+        f.write("</html>\n")
+
+    print(f"目录结构已生成到文件: {output_file}")
+
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    # 指定不生成的目录
+    exclude_directories = ['.idea', '.git']  # 修改为你想要排除的目录名
+    # 调用函数生成目录结构 HTML 文件
+    generate_directory_tree_html("./", 'index.html', exclude_dirs=exclude_directories)
 
-# 访问 https://www.jetbrains.com/help/pycharm/ 获取 PyCharm 帮助
