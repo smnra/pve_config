@@ -582,218 +582,11 @@ config wifi-iface 'wifinet0'
     option network 'lan'
 " > /etc/config/wireless
 
-sleep 5
+sleep 10
 
 # 启动 wifi
 wifi up
 wifi reload
-
-
-
-###############################################################################
-echo '设置DDNS 更新'
-# 删除源有配置
-uci del ddns.myddns_ipv4
-uci del ddns.myddns_ipv6
-
-# 新增 花生壳  ipv4 ddns
-uci set ddns.my_ipv4_ddns=service
-uci set ddns.my_ipv4_ddns.service_name='oray.com'
-uci set ddns.my_ipv4_ddns.use_ipv6='0'
-uci set ddns.my_ipv4_ddns.enabled='1'
-uci set ddns.my_ipv4_ddns.lookup_host='smnra.oicp.net'
-uci set ddns.my_ipv4_ddns.domain='smnra.oicp.net'
-uci set ddns.my_ipv4_ddns.username='smnra'
-uci set ddns.my_ipv4_ddns.password='F_st84080081'
-uci set ddns.my_ipv4_ddns.ip_source='network'
-uci set ddns.my_ipv4_ddns.ip_network='wan'
-uci set ddns.my_ipv4_ddns.interface='wan'
-uci set ddns.my_ipv4_ddns.force_ipversion='1'
-uci set ddns.my_ipv4_ddns.use_syslog='2'
-uci set ddns.my_ipv4_ddns.check_interval='10'
-uci set ddns.my_ipv4_ddns.check_unit='minutes'
-uci set ddns.my_ipv4_ddns.force_interval='60'
-uci set ddns.my_ipv4_ddns.force_unit='minutes'
-uci set ddns.my_ipv4_ddns.retry_max_count='0'
-uci set ddns.my_ipv4_ddns.retry_interval='2'
-uci set ddns.my_ipv4_ddns.retry_unit='minutes'
-
-
-# 新增 dynv6.com  ipv6 ddns
-uci set ddns.my_ipv6_ddns=service
-uci set ddns.my_ipv6_ddns.service_name='dynv6.com'
-uci set ddns.my_ipv6_ddns.use_ipv6='1'
-uci set ddns.my_ipv6_ddns.enabled='1'
-uci set ddns.my_ipv6_ddns.lookup_host='smnra.dynv6.net'
-uci set ddns.my_ipv6_ddns.domain='smnra.dynv6.net'
-uci set ddns.my_ipv6_ddns.username='smnra123@gmail.com'
-uci set ddns.my_ipv6_ddns.password='rmdTzb6Z54N1N5NrBKxwoyhonAwBoj'
-uci set ddns.my_ipv6_ddns.ip_source='network'
-uci set ddns.my_ipv6_ddns.ip_network='wan_6'
-uci set ddns.my_ipv6_ddns.interface='wan_6'
-uci set ddns.my_ipv6_ddns.force_ipversion='1'
-uci set ddns.my_ipv6_ddns.use_syslog='2'
-uci set ddns.my_ipv6_ddns.check_interval='10'
-uci set ddns.my_ipv6_ddns.check_unit='minutes'
-uci set ddns.my_ipv6_ddns.force_interval='60'
-uci set ddns.my_ipv6_ddns.force_unit='minutes'
-uci set ddns.my_ipv6_ddns.retry_max_count='0'
-uci set ddns.my_ipv6_ddns.retry_interval='2'
-uci set ddns.my_ipv6_ddns.retry_unit='minutes'
-
-
-
-# 直接写配置文件的方式 设置ddns
-echo "
-config ddns 'global'
-    option ddns_dateformat '%F %R'
-    option ddns_loglines '250'
-    option ddns_rundir '/var/run/ddns'
-    option ddns_logdir '/var/log/ddns'
-
-config service 'my_ipv4_ddns'
-    option service_name 'oray.com'
-    option use_ipv6 '0'
-    option enabled '1'
-    option lookup_host 'smnra.oicp.net'
-    option domain 'smnra.oicp.net'
-    option username 'smnra'
-    option password 'F_st84080081'
-    option ip_source 'network'
-    option ip_network 'wan'
-    option interface 'wan'
-    option force_ipversion '1'
-    option use_syslog '2'
-    option check_interval '10'
-    option check_unit 'minutes'
-    option force_interval '60'
-    option force_unit 'minutes'
-    option retry_max_count '0'
-    option retry_interval '2'
-    option retry_unit 'minutes'
-
-config service 'my_ipv6_ddns'
-    option service_name 'dynv6.com'
-    option use_ipv6 '1'
-    option enabled '1'
-    option lookup_host 'smnra.dynv6.net'
-    option domain 'smnra.dynv6.net'
-    option username 'smnra123@gmail.com'
-    option password 'rmdTzb6Z54N1N5NrBKxwoyhonAwBoj'
-    option ip_source 'network'
-    option ip_network 'wan_6'
-    option interface 'wan_6'
-    option force_ipversion '1'
-    option use_syslog '2'
-    option check_interval '10'
-    option check_unit 'minutes'
-    option force_interval '60'
-    option force_unit 'minutes'
-    option retry_max_count '0'
-    option retry_interval '2'
-    option retry_unit 'minutes'
-
-
-" > /etc/config/ddns
-
-
-# 启动 ddns 服务
-/etc/init.d/ddns restart
-
-
-
-
-
-
-
-
-################################################################
-echo '生成自有 DDNS 更新脚本'
-echo '
-#!/bin/sh
-oray_ddns=smnra.oicp.net
-dynv6_ddns_ipv4=smnra.dynv6.net
-dynv6_ddns_ipv6=smnra.dynv6.net
-# dynv6_ddns_ipv4=smnrao.dynv6.net
-
-oray_ddns_password=F_st84080081
-dynv6_ddns_password_ipv4=rmdTzb6Z54N1N5NrBKxwoyhonAwBoj
-dynv6_ddns_password_ipv6=rmdTzb6Z54N1N5NrBKxwoyhonAwBoj
-IPV6_ADDRESSprefix="240e:35c:7b7:d200::"
-
-
-# 获取外网接口名称（通常为 pppoe-wan ）
-WAN_INTERFACE=pppoe-wan
-
-# 提取 IPv4 地址
-IPV4_ADDRESS=$(ifconfig $WAN_INTERFACE | grep "inet addr:" | cut -d: -f2 | cut -d" " -f1)
-
-# 提取 IPv6 地址
-IPV6_ADDRESS=$(ifconfig $WAN_INTERFACE | grep "inet6 addr" | grep "Global" | sed "s/^.*inet6 addr: //" | cut -d/ -f1)
-
-echo ${IPV4_ADDRESS}
-echo ${IPV6_ADDRESS}
-echo -e "\n"
-
-
-# 更新 smnra.oicp.net ipv4
-echo "wget -nv -qO- -t 3 -4 http://smnra:${oray_ddns_password}@ddns.oray.com/ph/update?hostname=${oray_ddns}&myip=${IPV4_ADDRESS}"
-echo -e `date "+%Y-%m-%d %H:%M:%S"` 更新 smnra.oicp.net ipv4:
-wget -nv -qO- -t 3 -4 "http://smnra:${oray_ddns_password}@ddns.oray.com/ph/update?hostname=${oray_ddns}&myip=${IPV4_ADDRESS}"
-echo -e "\n"
-
-# 更新 smnra.dynv6.net ipv4
-echo "wget -nv -qO- -t 3 -4 http://dynv6.com/api/update?hostname=${dynv6_ddns_ipv4}&token=${dynv6_ddns_password_ipv4}&ipv4=${IPV4_ADDRESS}"
-echo -e `date "+%Y-%m-%d %H:%M:%S"` 更新 smnra.dynv6.net ipv4:
-wget -nv -qO-  -t 3 -4 "http://dynv6.com/api/update?hostname=${dynv6_ddns_ipv4}&token=${dynv6_ddns_password_ipv4}&ipv4=${IPV4_ADDRESS}"
-echo -e "\n"
-
-# 更新 smnra.dynv6.net  ipv6
-echo "wget -nv -qO- -t 3 -6 http://dynv6.com/api/update?hostname=${dynv6_ddns_ipv6}&token=${dynv6_ddns_password_ipv6}&ipv6=${IPV6_ADDRESS}&ipv6prefix=${IPV6_ADDRESSprefix}"
-echo -e `date "+%Y-%m-%d %H:%M:%S"` 更新 smnra.dynv6.net  ipv6:
-wget -nv -qO- -t 3 -6 "http://dynv6.com/api/update?hostname=${dynv6_ddns_ipv6}&token=${dynv6_ddns_password_ipv6}&ipv6=${IPV6_ADDRESS}&ipv6prefix=${IPV6_ADDRESSprefix}"
-echo -e "\n"
-
-
-' > /data/app/ddns/ddns_update.sh
-
-# 将脚本内容写入文件并设置权限
-chmod +x /data/app/ddns/ddns_update.sh
-
-echo "启动 ddns 脚本内容"
-/bin/sh /data/app/ddns/ddns_update.sh
-
-
-
-
-
-############################################################################################################################
-# 计划任务 crontab 添加ddns 每小时更新; 每天凌晨4点重启系统; 每小时释放内存;
-
-echo 'Crontab  添加ddns 每小时更新ddns'
-result=`strInFile "ddns_update.sh" '/etc/crontabs/root'`
-if [ ${result} == 1 ]
-then
-    echo "
-0  0 * * * /bin/sh /data/app/ddns/ddns_update.sh  >> /data/log/ddns_update.log &" >> /etc/crontabs/root
-fi
-
-echo 'Crontab 添加 每小时释放内存;'
-result=`strInFile "ram_release" '/etc/crontabs/root'`
-if [ ${result} == 1 ]
-then
-    echo "
-00 03 * * * /usr/bin/ram_release.sh release" >> /etc/crontabs/root
-fi
-
-echo 'Crontab 添加 每天凌晨4点重启系统;'
-result=`strInFile "reboot" '/etc/crontabs/root'`
-if [ ${result} == 1 ]
-then
-    echo "
-00 4 * * * sleep 10 && touch /etc/banner && reboot" >> /etc/crontabs/root
-fi
-
 
 
 
@@ -853,7 +646,7 @@ echo "启动 appfilter"
 
 
 ########################################################################
-echo "设置zerotier /etc/config/zerotier"
+echo "设置zerotier /etc/config/zerotier   secret 选项可能是控制 mac 地址的，需要固定"
 
 echo "
 config zerotier 'sample_config'
@@ -865,20 +658,6 @@ config zerotier 'sample_config'
 " > /etc/config/zerotier
 # 启动 zerotier
 /etc/init.d/zerotier start
-
-
-#echo "增加设置zerotier mac地址  mtu"
-#echo "
-#
-#config device
-#    option name 'ztc25dx6ge'
-#    option mtu '1500'
-#    option macaddr '82:87:e5:94:d1:36'
-#
-#" >>/etc/config/network
-
-# /etc/init.d/network restart
-
 
 
 
@@ -1029,15 +808,16 @@ chmod +x /etc/openvpn/server/checkpsw.sh
 
 
 
-
+echo "创建目录 /etc/openvpn/pki"
+mkdir -p /etc/openvpn/pki
 
 echo "下载openvpn证书文件"
-wget -q -O /etc/openvpn/pki/ca.crt https://smnra.github.io/pve_config/openwrt/openvpn/pki/ca.crt
-wget -q -O /etc/openvpn/pki/client1.crt https://smnra.github.io/pve_config/openwrt/openvpn/pki/client1.crt
-wget -q -O /etc/openvpn/pki/client1.key https://smnra.github.io/pve_config/openwrt/openvpn/pki/client1.key
-wget -q -O /etc/openvpn/pki/server.crt https://smnra.github.io/pve_config/openwrt/openvpn/pki/server.crt
-wget -q -O /etc/openvpn/pki/server.key https://smnra.github.io/pve_config/openwrt/openvpn/pki/server.key
-
+wget -O /etc/openvpn/pki/ca.crt https://smnra.github.io/pve_config/openwrt/openvpn/pki/ca.crt
+wget -O /etc/openvpn/pki/client1.crt https://smnra.github.io/pve_config/openwrt/openvpn/pki/client1.crt
+wget -O /etc/openvpn/pki/client1.key https://smnra.github.io/pve_config/openwrt/openvpn/pki/client1.key
+wget -O /etc/openvpn/pki/server.crt https://smnra.github.io/pve_config/openwrt/openvpn/pki/server.crt
+wget -O /etc/openvpn/pki/server.key https://smnra.github.io/pve_config/openwrt/openvpn/pki/server.key
+ls -l /etc/openvpn/pki/
 
 
 echo "生成 openvpn 证书自动生成脚本 /etc/openvpn/server/openvpncert.sh"
@@ -1460,11 +1240,23 @@ sleep 5
 #################################################################################################
 
 echo "设置 openclash"
-echo "下载 https://smnra.github.io/pve_config/openwrt/openclash/config.yaml 写入 /etc/openclash/config/config.yaml"
-wget -q -O /etc/openclash/config/config.yaml https://smnra.github.io/pve_config/openwrt/openclash/config.yml
+mkdir -p /etc/openclash/config /etc/openclash/core
 
-echo "后台下载 https://smnra.github.io/pve_config/openwrt/openclash/core/clash_meta 写入 /etc/openclash/core/clash_meta"
-wget -q  -b -O /etc/openclash/core/clash_meta https://smnra.github.io/pve_config/openwrt/openclash/core/clash_meta
+# openclash 配置文件
+if [ -f /etc/openclash/config/config.yaml ]; then
+    echo "/etc/openclash/config/config.yaml openclash 配置文件已存在，跳过下载"
+else
+    echo "下载 https://smnra.github.io/pve_config/openwrt/openclash/config.yaml 写入 /etc/openclash/config/config.yaml"
+    wget -O /etc/openclash/config/config.yaml https://smnra.github.io/pve_config/openwrt/openclash/config.yaml
+fi
+
+# openclash 核心文件
+if [ -f /etc/openclash/core/clash_meta ]; then
+    echo "/etc/openclash/core/clash_meta openclash 核心文件已存在，跳过下载"
+else
+    echo "下载 https://smnra.github.io/pve_config/openwrt/openclash/core/clash_meta 写入 /etc/openclash/core/clash_meta"
+    wget -O /etc/openclash/core/clash_meta https://smnra.github.io/pve_config/openwrt/openclash/core/clash_meta
+fi
 
 
 
@@ -1809,6 +1601,218 @@ echo "重启 openclash "
 
 #########################################################################################################
 
+
+###############################################################################
+echo '设置DDNS 更新'
+# 删除源有配置
+uci del ddns.myddns_ipv4
+uci del ddns.myddns_ipv6
+
+# 新增 花生壳  ipv4 ddns
+uci set ddns.my_ipv4_ddns=service
+uci set ddns.my_ipv4_ddns.service_name='oray.com'
+uci set ddns.my_ipv4_ddns.use_ipv6='0'
+uci set ddns.my_ipv4_ddns.enabled='1'
+uci set ddns.my_ipv4_ddns.lookup_host='smnra.oicp.net'
+uci set ddns.my_ipv4_ddns.domain='smnra.oicp.net'
+uci set ddns.my_ipv4_ddns.username='smnra'
+uci set ddns.my_ipv4_ddns.password='F_st84080081'
+uci set ddns.my_ipv4_ddns.ip_source='network'
+uci set ddns.my_ipv4_ddns.ip_network='wan'
+uci set ddns.my_ipv4_ddns.interface='wan'
+uci set ddns.my_ipv4_ddns.force_ipversion='1'
+uci set ddns.my_ipv4_ddns.use_syslog='2'
+uci set ddns.my_ipv4_ddns.check_interval='10'
+uci set ddns.my_ipv4_ddns.check_unit='minutes'
+uci set ddns.my_ipv4_ddns.force_interval='60'
+uci set ddns.my_ipv4_ddns.force_unit='minutes'
+uci set ddns.my_ipv4_ddns.retry_max_count='0'
+uci set ddns.my_ipv4_ddns.retry_interval='2'
+uci set ddns.my_ipv4_ddns.retry_unit='minutes'
+
+
+# 新增 dynv6.com  ipv6 ddns
+uci set ddns.my_ipv6_ddns=service
+uci set ddns.my_ipv6_ddns.service_name='dynv6.com'
+uci set ddns.my_ipv6_ddns.use_ipv6='1'
+uci set ddns.my_ipv6_ddns.enabled='1'
+uci set ddns.my_ipv6_ddns.lookup_host='smnra.dynv6.net'
+uci set ddns.my_ipv6_ddns.domain='smnra.dynv6.net'
+uci set ddns.my_ipv6_ddns.username='smnra123@gmail.com'
+uci set ddns.my_ipv6_ddns.password='rmdTzb6Z54N1N5NrBKxwoyhonAwBoj'
+uci set ddns.my_ipv6_ddns.ip_source='network'
+uci set ddns.my_ipv6_ddns.ip_network='wan_6'
+uci set ddns.my_ipv6_ddns.interface='wan_6'
+uci set ddns.my_ipv6_ddns.force_ipversion='1'
+uci set ddns.my_ipv6_ddns.use_syslog='2'
+uci set ddns.my_ipv6_ddns.check_interval='10'
+uci set ddns.my_ipv6_ddns.check_unit='minutes'
+uci set ddns.my_ipv6_ddns.force_interval='60'
+uci set ddns.my_ipv6_ddns.force_unit='minutes'
+uci set ddns.my_ipv6_ddns.retry_max_count='0'
+uci set ddns.my_ipv6_ddns.retry_interval='2'
+uci set ddns.my_ipv6_ddns.retry_unit='minutes'
+
+
+
+# 直接写配置文件的方式 设置ddns
+echo "
+config ddns 'global'
+    option ddns_dateformat '%F %R'
+    option ddns_loglines '250'
+    option ddns_rundir '/var/run/ddns'
+    option ddns_logdir '/var/log/ddns'
+
+config service 'my_ipv4_ddns'
+    option service_name 'oray.com'
+    option use_ipv6 '0'
+    option enabled '1'
+    option lookup_host 'smnra.oicp.net'
+    option domain 'smnra.oicp.net'
+    option username 'smnra'
+    option password 'F_st84080081'
+    option ip_source 'network'
+    option ip_network 'wan'
+    option interface 'wan'
+    option force_ipversion '1'
+    option use_syslog '2'
+    option check_interval '10'
+    option check_unit 'minutes'
+    option force_interval '60'
+    option force_unit 'minutes'
+    option retry_max_count '0'
+    option retry_interval '2'
+    option retry_unit 'minutes'
+
+config service 'my_ipv6_ddns'
+    option service_name 'dynv6.com'
+    option use_ipv6 '1'
+    option enabled '1'
+    option lookup_host 'smnra.dynv6.net'
+    option domain 'smnra.dynv6.net'
+    option username 'smnra123@gmail.com'
+    option password 'rmdTzb6Z54N1N5NrBKxwoyhonAwBoj'
+    option ip_source 'network'
+    option ip_network 'wan_6'
+    option interface 'wan_6'
+    option force_ipversion '1'
+    option use_syslog '2'
+    option check_interval '10'
+    option check_unit 'minutes'
+    option force_interval '60'
+    option force_unit 'minutes'
+    option retry_max_count '0'
+    option retry_interval '2'
+    option retry_unit 'minutes'
+
+
+" > /etc/config/ddns
+
+
+# 启动 ddns 服务
+/etc/init.d/ddns restart
+
+
+
+
+
+
+
+
+################################################################
+echo '生成自有 DDNS 更新脚本'
+echo '
+#!/bin/sh
+oray_ddns=smnra.oicp.net
+dynv6_ddns_ipv4=smnra.dynv6.net
+dynv6_ddns_ipv6=smnra.dynv6.net
+# dynv6_ddns_ipv4=smnrao.dynv6.net
+
+oray_ddns_password=F_st84080081
+dynv6_ddns_password_ipv4=rmdTzb6Z54N1N5NrBKxwoyhonAwBoj
+dynv6_ddns_password_ipv6=rmdTzb6Z54N1N5NrBKxwoyhonAwBoj
+IPV6_ADDRESSprefix="240e:35c:7b7:d200::"
+
+# 提取 IPv4 地址
+IPV4_ADDRESS=$(ifconfig pppoe-wan | grep "inet addr:" | cut -d: -f2 | cut -d" " -f1)
+
+# 提取 IPv6 地址
+IPV6_ADDRESS=$(ifconfig pppoe-wan | grep "inet6 addr" | grep "Global" | sed "s/^.*inet6 addr: //" | cut -d/ -f1)
+
+echo ${IPV4_ADDRESS}
+echo ${IPV6_ADDRESS}
+echo -e "\n"
+
+
+# 更新 smnra.oicp.net ipv4
+echo "wget -nv -qO- -t 3 -4 http://smnra:${oray_ddns_password}@ddns.oray.com/ph/update?hostname=${oray_ddns}&myip=${IPV4_ADDRESS}"
+echo -e `date "+%Y-%m-%d %H:%M:%S"` 更新 smnra.oicp.net ipv4:
+wget -nv -qO- -t 3 -4 "http://smnra:${oray_ddns_password}@ddns.oray.com/ph/update?hostname=${oray_ddns}&myip=${IPV4_ADDRESS}"
+echo -e "\n"
+
+# 更新 smnra.dynv6.net ipv4
+echo "wget -nv -qO- -t 3 -4 http://dynv6.com/api/update?hostname=${dynv6_ddns_ipv4}&token=${dynv6_ddns_password_ipv4}&ipv4=${IPV4_ADDRESS}"
+echo -e `date "+%Y-%m-%d %H:%M:%S"` 更新 smnra.dynv6.net ipv4:
+wget -nv -qO-  -t 3 -4 "http://dynv6.com/api/update?hostname=${dynv6_ddns_ipv4}&token=${dynv6_ddns_password_ipv4}&ipv4=${IPV4_ADDRESS}"
+echo -e "\n"
+
+# 更新 smnra.dynv6.net  ipv6
+echo "wget -nv -qO- -t 3 -6 http://dynv6.com/api/update?hostname=${dynv6_ddns_ipv6}&token=${dynv6_ddns_password_ipv6}&ipv6=${IPV6_ADDRESS}&ipv6prefix=${IPV6_ADDRESSprefix}"
+echo -e `date "+%Y-%m-%d %H:%M:%S"` 更新 smnra.dynv6.net  ipv6:
+wget -nv -qO- -t 3 -6 "http://dynv6.com/api/update?hostname=${dynv6_ddns_ipv6}&token=${dynv6_ddns_password_ipv6}&ipv6=${IPV6_ADDRESS}&ipv6prefix=${IPV6_ADDRESSprefix}"
+echo -e "\n"
+
+
+' > /data/app/ddns/ddns_update.sh
+
+# 将脚本内容写入文件并设置权限
+chmod +x /data/app/ddns/ddns_update.sh
+
+echo "启动 ddns 脚本内容"
+sleep 10
+/bin/bash /data/app/ddns/ddns_update.sh
+
+
+
+
+
+############################################################################################################################
+# 计划任务 crontab 添加ddns 每小时更新; 每天凌晨4点重启系统; 每小时释放内存;
+
+echo 'Crontab  添加ddns 每小时更新ddns'
+result=`strInFile "ddns_update.sh" '/etc/crontabs/root'`
+if [ ${result} == 1 ]
+then
+    echo "
+0  0 * * * /bin/sh /data/app/ddns/ddns_update.sh  >> /data/log/ddns_update.log &" >> /etc/crontabs/root
+fi
+
+echo 'Crontab 添加 每小时释放内存;'
+result=`strInFile "ram_release" '/etc/crontabs/root'`
+if [ ${result} == 1 ]
+then
+    echo "
+00 03 * * * /usr/bin/ram_release.sh release" >> /etc/crontabs/root
+fi
+
+echo 'Crontab 添加 每天凌晨4点重启系统;'
+result=`strInFile "reboot" '/etc/crontabs/root'`
+if [ ${result} == 1 ]
+then
+    echo "
+00 4 * * * sleep 10 && touch /etc/banner && reboot" >> /etc/crontabs/root
+fi
+
+
+
+
+
+
+
+
+
+
+
 ################################################################################################
 
 # /etc/config/dockerd
@@ -1823,15 +1827,23 @@ uci set dockerd.globals.bip='172.20.0.1/16'
 uci commit dockerd
 
 
+echo "下载安装 7zip 命令 7zz  到 /data/app/7zz"
+wget -c -O /data/app/7zz  https://smnra.github.io/pve_config/openwrt/tools/7zip/7zz
+chmod +x /data/app/7zz
+ln -s /data/app/7zz  /usr/bin/7zz
 
-echo "下载docker_data 数据包并解压"
-wget -c -O /data/docker/docker_data.zip  https://smnra.github.io/pve_config/docker/docker_data.tar.gz
 
-cd /data/docker/
-tar -zxvf docker_data.tar.gz
-mv all_docker-compose.yaml /data/docker/docker_data/all_docker-compose.yml
-rm -f  docker_data.tar.gz
 
+# echo "下载docker_data 数据包并解压"
+# wget -c -O /data/docker/docker_data.7z  https://smnra.github.io/pve_config/docker/docker_data.7z
+# cd /data/docker/
+# 7zz x -psmnra000 /data/docker/docker_data.7z -o/data/app/
+# mv /data/docker/all_docker-compose.yml /data/docker/docker_data/all_docker-compose.yml
+# rm -f  /data/docker/docker_data.7z
+
+
+echo "下载docker-compose 配置文件"
+wget -c -O /data/docker/docker_data/all_docker-compose.yml  https://smnra.github.io/pve_config/docker/all_docker-compose.yml
 
 echo "docker 镜像下载"
 docker pull tznb/twonav:latest
