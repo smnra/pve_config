@@ -1,0 +1,7 @@
+
+config zerotier 'sample_config'
+    option enabled '1'
+    option nat '1'
+    list join 'abfd31bd470a4583'
+    option secret 'a4ca7924e3:0:5c7fe1a2582db378d2fd18356f0f48c416747cc2b49462b4e2cd1d5b1cac5b11c4cc33d169377fddfb8473fab3193bfe41942550dbc6c75c2c59af284ec1b110:dd546f95119c1f97e388d0731624f33ba852e909635c73c2a92befb74d31bb797a688c0227de3124332978e307b4e17d87ee23a73617c34eae1f18344f2f055e'
+

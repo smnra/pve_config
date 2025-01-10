@@ -1,0 +1,40 @@
+config openvpn 'myvpn'
+    option enabled '1'
+    option proto 'tcp4'
+    option dev 'tun'
+    option topology 'subnet'
+    option server '100.100.0.0 255.255.255.0'
+    option comp_lzo 'yes'
+    option ca '/etc/openvpn/pki/ca.crt'
+    option dh '/etc/openvpn/pki/dh.pem'
+    option cert '/etc/openvpn/pki/server.crt'
+    option key '/etc/openvpn/pki/server.key'
+    option persist_key '1'
+    option persist_tun '1'
+    option max_clients '88'
+    option keepalive '10 120'
+    option verb '3'
+    option status '/var/log/openvpn_status.log'
+    option log '/tmp/openvpn.log'
+    option port '1122'
+    option ddns 'smnra.oicp.net'
+    option auth_user_pass_verify '/etc/openvpn/server/checkpsw.sh via-env'
+    option script_security '3'
+    option client_to_client '1'
+    option username_as_common_name '1'
+    option client_cert_not_required '1'
+        list push 'route 192.168.1.0 255.255.255.0'
+        list push 'route 192.168.10.0 255.255.255.0'
+        list push 'route 100.100.0.0 255.255.255.0'
+        list push 'route 100.100.1.0 255.255.255.0'
+        list push 'dhcp-option DNS 192.168.10.1'
+
+config openvpnclient
+
+config openvpnclientstart
+
+config openvpnclientconf
+
+config openvpnclientstop
+
+

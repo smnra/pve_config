@@ -1,0 +1,19 @@
+
+config global
+    option enabled '1'
+    option anonymous '0'
+    option webdav_port '25544'
+
+config share
+    option path '/data'
+    option name 'data'
+    list rw 'users'
+    list ro 'users'
+    list proto 'samba'
+    list proto 'webdav'
+
+config user
+    option username 'smnra'
+    option password 'smnra000'
+
+

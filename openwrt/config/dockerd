@@ -1,0 +1,23 @@
+
+config globals 'globals'
+	option data_root '/data/docker/docker_home'
+	option log_level 'warn'
+	option iptables '1'
+	option auto_start '1'
+	option bip '172.20.0.1/16'
+	list registry_mirrors 'https://registry.docker-cn.com'
+	list registry_mirrors 'https://docker.mirrors.ustc.edu.cn'
+	list registry_mirrors 'https://hub-mirror.c.163.com'
+	list registry_mirrors 'https://mirror.baidubce.com'
+	list registry_mirrors 'https://ccr.ccs.tencentyun.com'
+
+config proxies 'proxies'
+
+config dockerman 'dockerman'
+	option socket_path '/var/run/docker.sock'
+	option status_path '/tmp/.docker_action_status'
+	option debug 'false'
+	option debug_path '/tmp/.docker_debug'
+	option remote_endpoint '0'
+	list ac_allowed_interface 'br-lan'
+
