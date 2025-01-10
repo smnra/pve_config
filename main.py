@@ -126,8 +126,11 @@ def generate_directory_tree_html(path, output_file="index.html", exclude_dirs=No
                     commit_message = get_git_commit_message(full_path)  # 获取提交信息
                     # 获取文件的修改时间
                     modify_time = datetime.fromtimestamp(os.path.getmtime(full_path)).strftime('%Y-%m-%d %H:%M:%S')
-                    # 在文件名后显示修改时间，添加分隔符和样式
-                    f.write(f"{'    ' * (indent_level + 1)}<li class='file'><a class='file-link' href='{file_url}' title='{commit_message}'>{item}</a> <span class='modify-time'>------- (修改时间: {modify_time})</span></li>\n")
+                    # 判断文件类型，添加 target="_blank" 以及 download 属性
+                    if item.endswith(('.txt', '.md', '.csv', '.log')):
+                        f.write(f"{'    ' * (indent_level + 1)}<li class='file'><a class='file-link' href='{file_url}' title='{commit_message}' target='_blank'>{item}</a> <span class='modify-time'>------- (修改时间: {modify_time})</span></li>\n")
+                    else:
+                        f.write(f"{'    ' * (indent_level + 1)}<li class='file'><a class='file-link' href='{file_url}' title='{commit_message}' download>{item}</a> <span class='modify-time'>------- (修改时间: {modify_time})</span></li>\n")
 
         # 开始遍历
         write_directory_tree(path)
