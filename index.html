@@ -3,144 +3,302 @@
 <head>
     <meta charset='UTF-8'>
     <title>目录结构</title>
+    <style>
+        body { margin: 0; padding: 20px; font-family: Arial, sans-serif; background-color: #f4f4f4; color: #333; }
+        h1 { text-align: center; color: #0066cc; }
+        .file-link { color: #007bff; text-decoration: none; transition: color 0.3s; }
+        .file-link:hover { color: #0056b3; text-decoration: underline; }
+        .modify-time { color: gray; font-size: smaller; }
+        .directory { list-style-type: circle; }
+        .file { list-style-type: disc; }
+        .toggle-buttons { margin-bottom: 10px; text-align: center; }
+        .toggle-buttons button { margin: 0 5px; padding: 10px 15px; border: none; border-radius: 5px; background-color: #007bff; color: white; cursor: pointer; transition: background-color 0.3s; }
+        .toggle-buttons button:hover { background-color: #0056b3; }
+        #back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 18px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            display: none; /* 默认隐藏 */
+            transition: background-color 0.3s;
+        }
+        #back-to-top:hover {
+            background-color: #0056b3;
+        }
+        /* 防止内容换行，添加水平滚动条 */
+        ul { white-space: nowrap; }
+        li { white-space: nowrap; }
+        body { overflow-x: auto; }
+        .container { max-width: 1200px; margin: auto; padding: 20px; background: white; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); border-radius: 10px; }
+    </style>
+    <script>
+        function expandAll() {
+            const details = document.querySelectorAll('details');
+            details.forEach(detail => detail.open = true);
+        }
+        function collapseAll() {
+            const details = document.querySelectorAll('details');
+            details.forEach(detail => detail.open = false);
+        }
+        // 回到顶部功能
+        window.onscroll = function() {
+            const backToTopButton = document.getElementById('back-to-top');
+            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                backToTopButton.style.display = 'block';
+            } else {
+                backToTopButton.style.display = 'none';
+            }
+        };
+        function scrollToTop() {
+            document.body.scrollTop = 0; // 兼容 Safari
+            document.documentElement.scrollTop = 0; // 兼容 Chrome, Firefox, IE, Opera
+        }
+    </script>
 </head>
 <body>
-    <h1>目录结构</h1>
-    <ul>
-    <li><strong>docker/</strong></li>
-    <ul>
-        <li><a href='./docker/all_docker-compose.yml' title='2025-01-09_160513 调整 docker_data.tar.gz 的压缩格式'>all_docker-compose.yml</a></li>
-        <li><a href='./docker/docker_data.7z' title='2025-01-09_160513 调整 docker_data.tar.gz 的压缩格式'>docker_data.7z</a></li>
-        <li><a href='./docker/docker_data.tar.gz' title='2025-01-09_160513 调整 docker_data.tar.gz 的压缩格式'>docker_data.tar.gz</a></li>
-    </ul>
-    <li><strong>fnos/</strong></li>
-    <ul>
-    </ul>
-    <li><strong>huawei_HS8145X6/</strong></li>
-    <ul>
-        <li><a href='./huawei_HS8145X6/hw_ctree.xml' title='2025-01-08_170030 华为 HS8145X6 光猫 配置文件'>hw_ctree.xml</a></li>
-    </ul>
-    <li><a href='./index.html' title='2025-01-09_160513 调整 docker_data.tar.gz 的压缩格式'>index.html</a></li>
-    <li><strong>irouter/</strong></li>
-    <ul>
-        <li><a href='./irouter/smnr.vicp.net-system.conf.20250108152438-iRouter.txt' title='2025-01-08_152530   修改 openvpn 网段 为100.100.1.0/24'>smnr.vicp.net-system.conf.20250108152438-iRouter.txt</a></li>
-        <li><a href='./irouter/smnr.vicp.net-system.conf.20250109100354-iRouter.txt' title='2025-01-08_174211 iRouter 添加到192.168.1.0/24 的路由'>smnr.vicp.net-system.conf.20250109100354-iRouter.txt</a></li>
-    </ul>
-    <li><a href='./main.py' title='2025-01-09_105718 生成文件index.html 前 先删除已存在的index.html 文件 添加新功能, 当鼠标指向链接时 显示 github 提交时的提交信息'>main.py</a></li>
-    <li><strong>openwrt/</strong></li>
-    <ul>
-        <li><strong>config/</strong></li>
+    <div class='container'>
+        <h1>目录结构</h1>
+        <div class='toggle-buttons'>
+            <button onclick='expandAll()'>一键展开</button>
+            <button onclick='collapseAll()'>一键收起</button>
+        </div>
         <ul>
-            <li><a href='./openwrt/config/appfilter' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>appfilter</a></li>
-            <li><a href='./openwrt/config/ddns' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>ddns</a></li>
-            <li><a href='./openwrt/config/dockerd' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>dockerd</a></li>
-            <li><a href='./openwrt/config/my-dnshelper' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>my-dnshelper</a></li>
-            <li><a href='./openwrt/config/openclash' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>openclash</a></li>
-            <li><a href='./openwrt/config/openvpn' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>openvpn</a></li>
-            <li><a href='./openwrt/config/unishare' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>unishare</a></li>
-            <li><a href='./openwrt/config/webdav2' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>webdav2</a></li>
-            <li><strong>zero/</strong></li>
+    <li class='directory'>
+    <details>
+        <summary><strong>docker/</strong></summary>
+        <ul>
+        <li class='file'><a class='file-link' href='./docker/all_docker-compose.yml' title='2025-01-09_160513 调整 docker_data.tar.gz 的压缩格式'>all_docker-compose.yml</a> <span class='modify-time'>------- (修改时间: 2025-01-09 16:15:58)</span></li>
+        <li class='file'><a class='file-link' href='./docker/docker_data.7z' title='2025-01-09_160513 调整 docker_data.tar.gz 的压缩格式'>docker_data.7z</a> <span class='modify-time'>------- (修改时间: 2025-01-09 16:44:04)</span></li>
+        <li class='file'><a class='file-link' href='./docker/docker_data.tar.gz' title='2025-01-09_160513 调整 docker_data.tar.gz 的压缩格式'>docker_data.tar.gz</a> <span class='modify-time'>------- (修改时间: 2025-01-09 16:22:14)</span></li>
+        </ul>
+    </details>
+    </li>
+    <li class='directory'>
+    <details>
+        <summary><strong>fnos/</strong></summary>
+        <ul>
+        </ul>
+    </details>
+    </li>
+    <li class='directory'>
+    <details>
+        <summary><strong>huawei_HS8145X6/</strong></summary>
+        <ul>
+        <li class='file'><a class='file-link' href='./huawei_HS8145X6/hw_ctree.xml' title='2025-01-08_170030 华为 HS8145X6 光猫 配置文件'>hw_ctree.xml</a> <span class='modify-time'>------- (修改时间: 2025-01-08 16:59:55)</span></li>
+        </ul>
+    </details>
+    </li>
+    <li class='file'><a class='file-link' href='./index.html' title='2025-01-10_123115 设置openwrt_init 脚本为固定路径'>index.html</a> <span class='modify-time'>------- (修改时间: 2025-01-10 13:20:46)</span></li>
+    <li class='directory'>
+    <details>
+        <summary><strong>irouter/</strong></summary>
+        <ul>
+        <li class='file'><a class='file-link' href='./irouter/smnr.vicp.net-system.conf.20250108152438-iRouter.txt' title='2025-01-08_152530   修改 openvpn 网段 为100.100.1.0/24'>smnr.vicp.net-system.conf.20250108152438-iRouter.txt</a> <span class='modify-time'>------- (修改时间: 2025-01-08 15:24:56)</span></li>
+        <li class='file'><a class='file-link' href='./irouter/smnr.vicp.net-system.conf.20250109100354-iRouter.txt' title='2025-01-08_174211 iRouter 添加到192.168.1.0/24 的路由'>smnr.vicp.net-system.conf.20250109100354-iRouter.txt</a> <span class='modify-time'>------- (修改时间: 2025-01-09 10:26:46)</span></li>
+        </ul>
+    </details>
+    </li>
+    <li class='file'><a class='file-link' href='./main.py' title='2025-01-09_105718 生成文件index.html 前 先删除已存在的index.html 文件 添加新功能, 当鼠标指向链接时 显示 github 提交时的提交信息'>main.py</a> <span class='modify-time'>------- (修改时间: 2025-01-10 13:20:46)</span></li>
+    <li class='directory'>
+    <details>
+        <summary><strong>openwrt/</strong></summary>
+        <ul>
+        <li class='directory'>
+        <details>
+            <summary><strong>config/</strong></summary>
             <ul>
-                <li><a href='./openwrt/config/zero/authtoken.secret' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>authtoken.secret</a></li>
-                <li><a href='./openwrt/config/zero/identity.public' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>identity.public</a></li>
-                <li><a href='./openwrt/config/zero/identity.secret' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>identity.secret</a></li>
-                <li><a href='./openwrt/config/zero/metrics.prom' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>metrics.prom</a></li>
-                <li><a href='./openwrt/config/zero/metricstoken.secret' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>metricstoken.secret</a></li>
-                <li><strong>networks.d/</strong></li>
+            <li class='file'><a class='file-link' href='./openwrt/config/appfilter' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>appfilter</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:26:17)</span></li>
+            <li class='file'><a class='file-link' href='./openwrt/config/ddns' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>ddns</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:26:17)</span></li>
+            <li class='file'><a class='file-link' href='./openwrt/config/dockerd' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>dockerd</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:26:17)</span></li>
+            <li class='file'><a class='file-link' href='./openwrt/config/my-dnshelper' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>my-dnshelper</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:26:17)</span></li>
+            <li class='file'><a class='file-link' href='./openwrt/config/openclash' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>openclash</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:26:18)</span></li>
+            <li class='file'><a class='file-link' href='./openwrt/config/openvpn' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>openvpn</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:26:18)</span></li>
+            <li class='file'><a class='file-link' href='./openwrt/config/unishare' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>unishare</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:26:18)</span></li>
+            <li class='file'><a class='file-link' href='./openwrt/config/webdav2' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>webdav2</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:26:18)</span></li>
+            <li class='directory'>
+            <details>
+                <summary><strong>zero/</strong></summary>
                 <ul>
-                    <li><a href='./openwrt/config/zero/networks.d/abfd31bd470a4583.conf' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>abfd31bd470a4583.conf</a></li>
+                <li class='file'><a class='file-link' href='./openwrt/config/zero/authtoken.secret' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>authtoken.secret</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:26:19)</span></li>
+                <li class='file'><a class='file-link' href='./openwrt/config/zero/identity.public' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>identity.public</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:26:19)</span></li>
+                <li class='file'><a class='file-link' href='./openwrt/config/zero/identity.secret' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>identity.secret</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:26:19)</span></li>
+                <li class='file'><a class='file-link' href='./openwrt/config/zero/metrics.prom' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>metrics.prom</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:26:19)</span></li>
+                <li class='file'><a class='file-link' href='./openwrt/config/zero/metricstoken.secret' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>metricstoken.secret</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:26:19)</span></li>
+                <li class='directory'>
+                <details>
+                    <summary><strong>networks.d/</strong></summary>
+                    <ul>
+                    <li class='file'><a class='file-link' href='./openwrt/config/zero/networks.d/abfd31bd470a4583.conf' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>abfd31bd470a4583.conf</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:26:19)</span></li>
+                    </ul>
+                </details>
+                </li>
+                <li class='directory'>
+                <details>
+                    <summary><strong>peers.d/</strong></summary>
+                    <ul>
+                    <li class='file'><a class='file-link' href='./openwrt/config/zero/peers.d/62f865ae71.peer' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>62f865ae71.peer</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:26:19)</span></li>
+                    <li class='file'><a class='file-link' href='./openwrt/config/zero/peers.d/778cde7190.peer' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>778cde7190.peer</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:26:20)</span></li>
+                    <li class='file'><a class='file-link' href='./openwrt/config/zero/peers.d/9b1d9c16ff.peer' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>9b1d9c16ff.peer</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:26:20)</span></li>
+                    <li class='file'><a class='file-link' href='./openwrt/config/zero/peers.d/abfd31bd47.peer' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>abfd31bd47.peer</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:26:20)</span></li>
+                    <li class='file'><a class='file-link' href='./openwrt/config/zero/peers.d/cafe04eba9.peer' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>cafe04eba9.peer</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:26:20)</span></li>
+                    <li class='file'><a class='file-link' href='./openwrt/config/zero/peers.d/cafe80ed74.peer' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>cafe80ed74.peer</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:26:20)</span></li>
+                    <li class='file'><a class='file-link' href='./openwrt/config/zero/peers.d/cafe9ccda7.peer' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>cafe9ccda7.peer</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:26:20)</span></li>
+                    <li class='file'><a class='file-link' href='./openwrt/config/zero/peers.d/cafe9efeb9.peer' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>cafe9efeb9.peer</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:26:20)</span></li>
+                    </ul>
+                </details>
+                </li>
+                <li class='file'><a class='file-link' href='./openwrt/config/zero/planet' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>planet</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:26:19)</span></li>
+                <li class='file'><a class='file-link' href='./openwrt/config/zero/zerotier-one.pid' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>zerotier-one.pid</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:26:19)</span></li>
+                <li class='file'><a class='file-link' href='./openwrt/config/zero/zerotier-one.port' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>zerotier-one.port</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:26:19)</span></li>
                 </ul>
-                <li><strong>peers.d/</strong></li>
+            </details>
+            </li>
+            <li class='file'><a class='file-link' href='./openwrt/config/zerotier' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>zerotier</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:40:55)</span></li>
+            </ul>
+        </details>
+        </li>
+        <li class='directory'>
+        <details>
+            <summary><strong>ddns/</strong></summary>
+            <ul>
+            <li class='file'><a class='file-link' href='./openwrt/ddns/ddns_update.sh' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>ddns_update.sh</a> <span class='modify-time'>------- (修改时间: 2025-01-09 10:31:42)</span></li>
+            </ul>
+        </details>
+        </li>
+        <li class='directory'>
+        <details>
+            <summary><strong>init.d/</strong></summary>
+            <ul>
+            </ul>
+        </details>
+        </li>
+        <li class='directory'>
+        <details>
+            <summary><strong>openclash/</strong></summary>
+            <ul>
+            <li class='file'><a class='file-link' href='./openwrt/openclash/Country.mmdb' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>Country.mmdb</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:24:06)</span></li>
+            <li class='file'><a class='file-link' href='./openwrt/openclash/GeoSite.dat' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>GeoSite.dat</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:24:08)</span></li>
+            <li class='file'><a class='file-link' href='./openwrt/openclash/cache.db' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>cache.db</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:24:07)</span></li>
+            <li class='file'><a class='file-link' href='./openwrt/openclash/china_ip6_route.ipset' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>china_ip6_route.ipset</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:24:07)</span></li>
+            <li class='file'><a class='file-link' href='./openwrt/openclash/china_ip_route.ipset' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>china_ip_route.ipset</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:24:06)</span></li>
+            <li class='file'><a class='file-link' href='./openwrt/openclash/config.yaml' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>config.yaml</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:24:07)</span></li>
+            <li class='directory'>
+            <details>
+                <summary><strong>core/</strong></summary>
                 <ul>
-                    <li><a href='./openwrt/config/zero/peers.d/62f865ae71.peer' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>62f865ae71.peer</a></li>
-                    <li><a href='./openwrt/config/zero/peers.d/778cde7190.peer' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>778cde7190.peer</a></li>
-                    <li><a href='./openwrt/config/zero/peers.d/9b1d9c16ff.peer' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>9b1d9c16ff.peer</a></li>
-                    <li><a href='./openwrt/config/zero/peers.d/abfd31bd47.peer' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>abfd31bd47.peer</a></li>
-                    <li><a href='./openwrt/config/zero/peers.d/cafe04eba9.peer' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>cafe04eba9.peer</a></li>
-                    <li><a href='./openwrt/config/zero/peers.d/cafe80ed74.peer' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>cafe80ed74.peer</a></li>
-                    <li><a href='./openwrt/config/zero/peers.d/cafe9ccda7.peer' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>cafe9ccda7.peer</a></li>
-                    <li><a href='./openwrt/config/zero/peers.d/cafe9efeb9.peer' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>cafe9efeb9.peer</a></li>
+                <li class='file'><a class='file-link' href='./openwrt/openclash/core/clash_meta' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>clash_meta</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:22:57)</span></li>
                 </ul>
-                <li><a href='./openwrt/config/zero/planet' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>planet</a></li>
-                <li><a href='./openwrt/config/zero/zerotier-one.pid' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>zerotier-one.pid</a></li>
-                <li><a href='./openwrt/config/zero/zerotier-one.port' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>zerotier-one.port</a></li>
+            </details>
+            </li>
             </ul>
-            <li><a href='./openwrt/config/zerotier' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>zerotier</a></li>
-        </ul>
-        <li><strong>ddns/</strong></li>
-        <ul>
-            <li><a href='./openwrt/ddns/ddns_update.sh' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>ddns_update.sh</a></li>
-        </ul>
-        <li><strong>init.d/</strong></li>
-        <ul>
-        </ul>
-        <li><strong>openclash/</strong></li>
-        <ul>
-            <li><a href='./openwrt/openclash/Country.mmdb' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>Country.mmdb</a></li>
-            <li><a href='./openwrt/openclash/GeoSite.dat' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>GeoSite.dat</a></li>
-            <li><a href='./openwrt/openclash/cache.db' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>cache.db</a></li>
-            <li><a href='./openwrt/openclash/china_ip6_route.ipset' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>china_ip6_route.ipset</a></li>
-            <li><a href='./openwrt/openclash/china_ip_route.ipset' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>china_ip_route.ipset</a></li>
-            <li><a href='./openwrt/openclash/config.yaml' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>config.yaml</a></li>
-            <li><strong>core/</strong></li>
+        </details>
+        </li>
+        <li class='directory'>
+        <details>
+            <summary><strong>openvpn/</strong></summary>
             <ul>
-                <li><a href='./openwrt/openclash/core/clash_meta' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>clash_meta</a></li>
+            <li class='directory'>
+            <details>
+                <summary><strong>pki/</strong></summary>
+                <ul>
+                <li class='file'><a class='file-link' href='./openwrt/openvpn/pki/ca.crt' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>ca.crt</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:19:25)</span></li>
+                <li class='file'><a class='file-link' href='./openwrt/openvpn/pki/client1.crt' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>client1.crt</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:19:25)</span></li>
+                <li class='file'><a class='file-link' href='./openwrt/openvpn/pki/client1.key' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>client1.key</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:19:25)</span></li>
+                <li class='file'><a class='file-link' href='./openwrt/openvpn/pki/dh.pem' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>dh.pem</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:19:25)</span></li>
+                <li class='file'><a class='file-link' href='./openwrt/openvpn/pki/server.crt' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>server.crt</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:19:25)</span></li>
+                <li class='file'><a class='file-link' href='./openwrt/openvpn/pki/server.key' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>server.key</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:19:25)</span></li>
+                </ul>
+            </details>
+            </li>
+            <li class='directory'>
+            <details>
+                <summary><strong>server/</strong></summary>
+                <ul>
+                <li class='file'><a class='file-link' href='./openwrt/openvpn/server/checkpsw.sh' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>checkpsw.sh</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:19:24)</span></li>
+                <li class='file'><a class='file-link' href='./openwrt/openvpn/server/openvpncert.sh' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>openvpncert.sh</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:19:25)</span></li>
+                <li class='file'><a class='file-link' href='./openwrt/openvpn/server/psw-file' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>psw-file</a> <span class='modify-time'>------- (修改时间: 2025-01-10 09:19:25)</span></li>
+                </ul>
+            </details>
+            </li>
             </ul>
+        </details>
+        </li>
+        <li class='file'><a class='file-link' href='./openwrt/openwrt_init.sh' title='2025-01-10_123115 设置openwrt_init 脚本为固定路径'>openwrt_init.sh</a> <span class='modify-time'>------- (修改时间: 2025-01-10 13:00:16)</span></li>
+        <li class='directory'>
+        <details>
+            <summary><strong>tools/</strong></summary>
+            <ul>
+            <li class='directory'>
+            <details>
+                <summary><strong>init/</strong></summary>
+                <ul>
+                <li class='file'><a class='file-link' href='./openwrt/tools/init/openwrt_init_2025-01-06.sh' title='2025-01-10_123115 设置openwrt_init 脚本为固定路径'>openwrt_init_2025-01-06.sh</a> <span class='modify-time'>------- (修改时间: 2025-01-08 16:34:06)</span></li>
+                <li class='file'><a class='file-link' href='./openwrt/tools/init/openwrt_init_2025-01-08.sh' title='2025-01-10_123115 设置openwrt_init 脚本为固定路径'>openwrt_init_2025-01-08.sh</a> <span class='modify-time'>------- (修改时间: 2025-01-08 17:40:43)</span></li>
+                <li class='file'><a class='file-link' href='./openwrt/tools/init/openwrt_init_2025-01-09_110728.sh' title='2025-01-10_123115 设置openwrt_init 脚本为固定路径'>openwrt_init_2025-01-09_110728.sh</a> <span class='modify-time'>------- (修改时间: 2025-01-09 17:34:58)</span></li>
+                <li class='file'><a class='file-link' href='./openwrt/tools/init/openwrt_init_2025-01-10_094247.sh' title='2025-01-10_123115 设置openwrt_init 脚本为固定路径'>openwrt_init_2025-01-10_094247.sh</a> <span class='modify-time'>------- (修改时间: 2025-01-10 11:03:38)</span></li>
+                </ul>
+            </details>
+            </li>
+            </ul>
+        </details>
+        </li>
         </ul>
-        <li><strong>openvpn/</strong></li>
+    </details>
+    </li>
+    <li class='directory'>
+    <details>
+        <summary><strong>pve/</strong></summary>
         <ul>
-            <li><strong>pki/</strong></li>
+        <li class='directory'>
+        <details>
+            <summary><strong>etc/</strong></summary>
             <ul>
-                <li><a href='./openwrt/openvpn/pki/ca.crt' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>ca.crt</a></li>
-                <li><a href='./openwrt/openvpn/pki/client1.crt' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>client1.crt</a></li>
-                <li><a href='./openwrt/openvpn/pki/client1.key' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>client1.key</a></li>
-                <li><a href='./openwrt/openvpn/pki/dh.pem' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>dh.pem</a></li>
-                <li><a href='./openwrt/openvpn/pki/server.crt' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>server.crt</a></li>
-                <li><a href='./openwrt/openvpn/pki/server.key' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>server.key</a></li>
+            <li class='directory'>
+            <details>
+                <summary><strong>profile.d/</strong></summary>
+                <ul>
+                <li class='file'><a class='file-link' href='./pve/etc/profile.d/alias.sh' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>alias.sh</a> <span class='modify-time'>------- (修改时间: 2024-12-17 22:21:36)</span></li>
+                </ul>
+            </details>
+            </li>
+            <li class='file'><a class='file-link' href='./pve/etc/pve8.3.1_apt_bak.tar.gz' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>pve8.3.1_apt_bak.tar.gz</a> <span class='modify-time'>------- (修改时间: 2024-12-22 22:06:16)</span></li>
             </ul>
-            <li><strong>server/</strong></li>
+        </details>
+        </li>
+        <li class='directory'>
+        <details>
+            <summary><strong>tools/</strong></summary>
             <ul>
-                <li><a href='./openwrt/openvpn/server/checkpsw.sh' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>checkpsw.sh</a></li>
-                <li><a href='./openwrt/openvpn/server/openvpncert.sh' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>openvpncert.sh</a></li>
-                <li><a href='./openwrt/openvpn/server/psw-file' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>psw-file</a></li>
+            <li class='file'><a class='file-link' href='./pve/tools/pve_source.tar.gz' title='ROM解析工具及其文档，并添加OpenWrt系统初始化脚本以配置系统、网络、WiFi和DDNS等设置。'>pve_source.tar.gz</a> <span class='modify-time'>------- (修改时间: 2024-12-05 15:50:01)</span></li>
+            <li class='directory'>
+            <details>
+                <summary><strong>rom-parser/</strong></summary>
+                <ul>
+                <li class='file'><a class='file-link' href='./pve/tools/rom-parser/Makefile' title='ROM解析工具及其文档，并添加OpenWrt系统初始化脚本以配置系统、网络、WiFi和DDNS等设置。'>Makefile</a> <span class='modify-time'>------- (修改时间: 2025-01-06 17:32:24)</span></li>
+                <li class='file'><a class='file-link' href='./pve/tools/rom-parser/README.md' title='ROM解析工具及其文档，并添加OpenWrt系统初始化脚本以配置系统、网络、WiFi和DDNS等设置。'>README.md</a> <span class='modify-time'>------- (修改时间: 2025-01-06 17:32:25)</span></li>
+                <li class='file'><a class='file-link' href='./pve/tools/rom-parser/rom-fixer' title='ROM解析工具及其文档，并添加OpenWrt系统初始化脚本以配置系统、网络、WiFi和DDNS等设置。'>rom-fixer</a> <span class='modify-time'>------- (修改时间: 2025-01-06 17:32:25)</span></li>
+                <li class='file'><a class='file-link' href='./pve/tools/rom-parser/rom-parser' title='ROM解析工具及其文档，并添加OpenWrt系统初始化脚本以配置系统、网络、WiFi和DDNS等设置。'>rom-parser</a> <span class='modify-time'>------- (修改时间: 2025-01-06 17:32:25)</span></li>
+                <li class='file'><a class='file-link' href='./pve/tools/rom-parser/rom-parser.c' title='ROM解析工具及其文档，并添加OpenWrt系统初始化脚本以配置系统、网络、WiFi和DDNS等设置。'>rom-parser.c</a> <span class='modify-time'>------- (修改时间: 2025-01-06 17:32:25)</span></li>
+                </ul>
+            </details>
+            </li>
+            <li class='file'><a class='file-link' href='./pve/tools/vbios.bin' title='ROM解析工具及其文档，并添加OpenWrt系统初始化脚本以配置系统、网络、WiFi和DDNS等设置。'>vbios.bin</a> <span class='modify-time'>------- (修改时间: 2024-12-27 10:58:10)</span></li>
             </ul>
+        </details>
+        </li>
         </ul>
-        <li><a href='./openwrt/openwrt_init.sh' title='无提交信息'>openwrt_init.sh</a></li>
-        <li><strong>tools/</strong></li>
-        <ul>
-            <li><strong>init/</strong></li>
-            <ul>
-                <li><a href='./openwrt/tools/init/openwrt_init_2025-01-06.sh' title='无提交信息'>openwrt_init_2025-01-06.sh</a></li>
-                <li><a href='./openwrt/tools/init/openwrt_init_2025-01-08.sh' title='无提交信息'>openwrt_init_2025-01-08.sh</a></li>
-                <li><a href='./openwrt/tools/init/openwrt_init_2025-01-09_110728.sh' title='无提交信息'>openwrt_init_2025-01-09_110728.sh</a></li>
-                <li><a href='./openwrt/tools/init/openwrt_init_2025-01-10_094247.sh' title='无提交信息'>openwrt_init_2025-01-10_094247.sh</a></li>
-            </ul>
+    </details>
+    </li>
         </ul>
-    </ul>
-    <li><strong>pve/</strong></li>
-    <ul>
-        <li><strong>etc/</strong></li>
-        <ul>
-            <li><strong>profile.d/</strong></li>
-            <ul>
-                <li><a href='./pve/etc/profile.d/alias.sh' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>alias.sh</a></li>
-            </ul>
-            <li><a href='./pve/etc/pve8.3.1_apt_bak.tar.gz' title='2025-01-10_103029 添加 openwrt的 etc/config目录'>pve8.3.1_apt_bak.tar.gz</a></li>
-        </ul>
-        <li><strong>tools/</strong></li>
-        <ul>
-            <li><a href='./pve/tools/pve_source.tar.gz' title='ROM解析工具及其文档，并添加OpenWrt系统初始化脚本以配置系统、网络、WiFi和DDNS等设置。'>pve_source.tar.gz</a></li>
-            <li><strong>rom-parser/</strong></li>
-            <ul>
-                <li><a href='./pve/tools/rom-parser/Makefile' title='ROM解析工具及其文档，并添加OpenWrt系统初始化脚本以配置系统、网络、WiFi和DDNS等设置。'>Makefile</a></li>
-                <li><a href='./pve/tools/rom-parser/README.md' title='ROM解析工具及其文档，并添加OpenWrt系统初始化脚本以配置系统、网络、WiFi和DDNS等设置。'>README.md</a></li>
-                <li><a href='./pve/tools/rom-parser/rom-fixer' title='ROM解析工具及其文档，并添加OpenWrt系统初始化脚本以配置系统、网络、WiFi和DDNS等设置。'>rom-fixer</a></li>
-                <li><a href='./pve/tools/rom-parser/rom-parser' title='ROM解析工具及其文档，并添加OpenWrt系统初始化脚本以配置系统、网络、WiFi和DDNS等设置。'>rom-parser</a></li>
-                <li><a href='./pve/tools/rom-parser/rom-parser.c' title='ROM解析工具及其文档，并添加OpenWrt系统初始化脚本以配置系统、网络、WiFi和DDNS等设置。'>rom-parser.c</a></li>
-            </ul>
-            <li><a href='./pve/tools/vbios.bin' title='ROM解析工具及其文档，并添加OpenWrt系统初始化脚本以配置系统、网络、WiFi和DDNS等设置。'>vbios.bin</a></li>
-        </ul>
-    </ul>
-    </ul>
+        <button id='back-to-top' onclick='scrollToTop()' title='回到顶部'>↑</button>
+    </div>
 </body>
 </html>
