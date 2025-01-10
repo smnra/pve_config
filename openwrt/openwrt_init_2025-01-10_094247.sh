@@ -91,7 +91,7 @@ echo '无线网卡 mt7921e 软件包安装.   bypass'
 # opkg install iw-full kmod-mt7921e hostapd-openssl
 
 opkg install wol etherwake luci-app-wol luci-i18n-wol-zh-cn
-opkg Install docker-compose
+opkg install docker-compose
 opkg install iptvhelper
 # opkg install zerotier luci-app-zerotier
 # opkg install headscale
@@ -1431,11 +1431,11 @@ chmod +x /etc/init.d/openvpn
 
 
 # 下载证书文件
-wget -y -q -O /etc/openvpn/pki/ca.crt https://smnra.github.io/pve_config/openwrt/openvpn/pki/ca.crt
-wget -y -q -O /etc/openvpn/pki/client1.crt https://smnra.github.io/pve_config/openwrt/openvpn/pki/client1.crt
-wget -y -q -O /etc/openvpn/pki/client1.key https://smnra.github.io/pve_config/openwrt/openvpn/pki/client1.key
-wget -y -q -O /etc/openvpn/pki/server.crt https://smnra.github.io/pve_config/openwrt/openvpn/pki/server.crt
-wget -y -q -O /etc/openvpn/pki/server.key https://smnra.github.io/pve_config/openwrt/openvpn/pki/server.key
+wget -q -O /etc/openvpn/pki/ca.crt https://smnra.github.io/pve_config/openwrt/openvpn/pki/ca.crt
+wget -q -O /etc/openvpn/pki/client1.crt https://smnra.github.io/pve_config/openwrt/openvpn/pki/client1.crt
+wget -q -O /etc/openvpn/pki/client1.key https://smnra.github.io/pve_config/openwrt/openvpn/pki/client1.key
+wget -q -O /etc/openvpn/pki/server.crt https://smnra.github.io/pve_config/openwrt/openvpn/pki/server.crt
+wget -q -O /etc/openvpn/pki/server.key https://smnra.github.io/pve_config/openwrt/openvpn/pki/server.key
 
 # 判断是否重新生成证书文件
 if [ -f /etc/openvpn/pki/server.key ]; then
@@ -1461,10 +1461,10 @@ sleep 5
 
 echo "设置 openclash"
 echo "下载 https://smnra.github.io/pve_config/openwrt/openclash/config.yaml 写入 /etc/openclash/config/config.yaml"
-wget -y -q -O /etc/openclash/config/config.yaml https://smnra.github.io/pve_config/openwrt/openclash/config.yml
+wget -q -O /etc/openclash/config/config.yaml https://smnra.github.io/pve_config/openwrt/openclash/config.yml
 
 echo "后台下载 https://smnra.github.io/pve_config/openwrt/openclash/core/clash_meta 写入 /etc/openclash/core/clash_meta"
-wget -y -q  -b -O /etc/openclash/core/clash_meta https://smnra.github.io/pve_config/openwrt/openclash/core/clash_meta
+wget -q  -b -O /etc/openclash/core/clash_meta https://smnra.github.io/pve_config/openwrt/openclash/core/clash_meta
 
 
 
