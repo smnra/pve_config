@@ -81,18 +81,6 @@ mkdir -p /data/docker/docker_data
 
 
 
-################################################################################
-# /etc/config/dockerd
-echo "配置docker."
-uci set dockerd.globals.data_root='/data/docker/docker_home'
-uci add_list dockerd.globals.registry_mirrors='https://registry.docker-cn.com'
-uci add_list dockerd.globals.registry_mirrors='https://docker.mirrors.ustc.edu.cn'
-uci add_list dockerd.globals.registry_mirrors='https://hub-mirror.c.163.com'
-uci add_list dockerd.globals.registry_mirrors='https://mirror.baidubce.com'
-uci add_list dockerd.globals.registry_mirrors='https://ccr.ccs.tencentyun.com'
-uci commit dockerd
-
-
 
 
 ################################################################################
@@ -103,7 +91,7 @@ echo '无线网卡 mt7921e 软件包安装.   bypass'
 # opkg install iw-full kmod-mt7921e hostapd-openssl
 
 opkg install wol etherwake luci-app-wol luci-i18n-wol-zh-cn
-opkg Install docker-compose
+opkg install docker-compose
 opkg install iptvhelper
 # opkg install zerotier luci-app-zerotier
 # opkg install headscale
@@ -158,11 +146,6 @@ then
 
 sleep 10
 
-# 修改 ZeroTier 接口mac地址  无效
-ip link set dev ztc25dx6ge down
-ip link set dev ztc25dx6ge address 00:11:22:33:44:02
-ip link set dev ztc25dx6ge up
-
 #DDNS 更新
 ping  127.0.0.1 -c 60 && sh /root/ddns_update.sh  >> /data/log/ddns_update.log &
 
@@ -208,34 +191,6 @@ config interface 'lan_gpon'
 else
     echo "已找到 config interface 'lan_gpon' ,未修改 /etc/config/network" >> /root/系统初始化设置.log
 fi
-
-
-
-
-
-
-
-########################################################################################
-
-echo '设置 zerotier的接口 ztc25dx6ge mac地址:00:11:22:33:44:02, mtu:1500,  貌似无效'
-
-result=`strInFile "config interface 'ztc25dx6ge'" '/etc/config/network'`
-echo result: ${result}
-if [ ${result} == 1 ]
-then
-    echo "
-
-config device
-    option name 'ztc25dx6ge'
-    option mtu '1500'
-    option macaddr '00:11:22:33:44:02'
-
-" >> /etc/config/network
-else
-    echo "已找到 config interface 'lan_gpon' ,未修改 /etc/config/network" >> /root/系统初始化设置.log
-fi
-
-/etc/init.d/network restart
 
 
 
@@ -499,6 +454,15 @@ config redirect
     option src_dport '8101'
     option dest_ip '192.168.10.1'
     option dest_port '25544'
+
+config redirect
+    option dest 'lan'
+    option target 'DNAT'
+    option name 'http_proxy'
+    option src 'wan'
+    option src_dport '8102'
+    option dest_ip '192.168.10.1'
+    option dest_port '7890'
 
 config redirect
     option dest 'lan'
@@ -895,7 +859,9 @@ echo "
 config zerotier 'sample_config'
     option enabled '1'
     option nat '1'
-        list join 'abfd31bd470a4583'
+    list join 'abfd31bd470a4583'
+    option secret 'a4ca7924e3:0:5c7fe1a2582db378d2fd18356f0f48c416747cc2b49462b4e2cd1d5b1cac5b11c4cc33d169377fddfb8473fab3193bfe41942550dbc6c75c2c59af284ec1b110:dd546f95119c1f97e388d0731624f33ba852e909635c73c2a92befb74d31bb797a688c0227de3124332978e307b4e17d87ee23a73617c34eae1f18344f2f055e'
+
 " > /etc/config/zerotier
 # 启动 zerotier
 /etc/init.d/zerotier start
@@ -949,55 +915,6 @@ echo "启动 unishare"
 
 
 
-
-
-
-
-
-
-#####################################################################
-echo "设置 bypass /etc/config/bypass"
-
-echo "
-config global
-    option dports '2'
-    option threads '0'
-    option run_mode 'gfw'
-    option dns_mode_o 'tcp'
-    option gfw_mode '1'
-    option dns_mode_d 'doh'
-    option doh_dns_d 'alidns'
-    option monitor_enable '1'
-    option enable_switch '1'
-    option switch_time '300'
-    option switch_timeout '5'
-    option switch_try_count '3'
-    option adguardhome '0'
-    option tcp_dns_o '8.8.8.8,8.8.4.4'
-    option global_server 'cfg064a8f'
-    option udp_relay_server 'same'
-
-config socks5_proxy
-    option server 'same'
-    option local_port '1080'
-
-config access_control
-    option lan_ac_mode 'b'
-
-config server_global
-
-config server_subscribe
-    option proxy '0'
-    option auto_update_time '5'
-    option auto_update '1'
-    option filter_words '过期时间/剩余流量/QQ群/官网/防失联地址/回国'
-    list subscribe_url 'https://smnra.github.io/yudoucode/v2ray/index.html'
-    option switch '0'
-
-" > /etc/config/bypass
-
-echo "重启 bypass "
-/etc/init.d/bypass restart
 
 
 
@@ -1513,13 +1430,22 @@ echo "$script_content" > /etc/init.d/openvpn
 chmod +x /etc/init.d/openvpn
 
 
-echo "生成openvpn证书"
-# /bin/sh /etc/openvpncert.sh
-# /bin/sh /etc/openvpncert.sh
-/bin/sh /etc/openvpn/server/openvpncert.sh
-sleep 10
+# 下载证书文件
+wget -q -O /etc/openvpn/pki/ca.crt https://smnra.github.io/pve_config/openwrt/openvpn/pki/ca.crt
+wget -q -O /etc/openvpn/pki/client1.crt https://smnra.github.io/pve_config/openwrt/openvpn/pki/client1.crt
+wget -q -O /etc/openvpn/pki/client1.key https://smnra.github.io/pve_config/openwrt/openvpn/pki/client1.key
+wget -q -O /etc/openvpn/pki/server.crt https://smnra.github.io/pve_config/openwrt/openvpn/pki/server.crt
+wget -q -O /etc/openvpn/pki/server.key https://smnra.github.io/pve_config/openwrt/openvpn/pki/server.key
 
+# 判断是否重新生成证书文件
+if [ -f /etc/openvpn/pki/server.key ]; then
+    echo "/etc/openvpn/pki 目录已存在证书文件，跳过生成证书步骤"
+else
+    echo "/etc/openvpn/pki 目录不存在证书文件，开始生成 openvpn证书."
+    /bin/sh /etc/openvpn/server/openvpncert.sh
+fi
 
+sleep 5
 # 启动 openvpn
 /etc/init.d/openvpn restart
 
@@ -1531,10 +1457,373 @@ sleep 10
 
 
 
+#################################################################################################
+
+echo "设置 openclash"
+echo "下载 https://smnra.github.io/pve_config/openwrt/openclash/config.yaml 写入 /etc/openclash/config/config.yaml"
+wget -q -O /etc/openclash/config/config.yaml https://smnra.github.io/pve_config/openwrt/openclash/config.yml
+
+echo "后台下载 https://smnra.github.io/pve_config/openwrt/openclash/core/clash_meta 写入 /etc/openclash/core/clash_meta"
+wget -q  -b -O /etc/openclash/core/clash_meta https://smnra.github.io/pve_config/openwrt/openclash/core/clash_meta
 
 
 
-# ###############################################################################################
+
+echo "写入 /etc/config/openclash"
+echo "
+
+config openclash 'config'
+	option http_port '7890'
+	option dns_port '7874'
+	option enable '1'
+	option update '0'
+	option en_mode 'redir-host'
+	option auto_update '1'
+	option auto_update_time '12'
+	option dashboard_forward_ssl '0'
+	option rule_source '0'
+	option enable_custom_dns '0'
+	option ipv6_enable '0'
+	option ipv6_dns '0'
+	option enable_custom_clash_rules '0'
+	option other_rule_auto_update '1'
+	option core_version 'linux-amd64'
+	option enable_redirect_dns '1'
+	option servers_if_update '0'
+	option disable_masq_cache '1'
+	option servers_update '0'
+	option log_level '0'
+	option proxy_mode 'rule'
+	option intranet_allowed '1'
+	option enable_udp_proxy '1'
+	option disable_udp_quic '1'
+	option lan_ac_mode '1'
+	option operation_mode 'redir-host'
+	option enable_rule_proxy '0'
+	option redirect_dns '1'
+	option cachesize_dns '1'
+	option filter_aaaa_dns '0'
+	option small_flash_memory '0'
+	option interface_name '0'
+	option common_ports '0'
+	option log_size '1024'
+	option tolerance '0'
+	option store_fakeip '0'
+	option custom_fallback_filter '0'
+	option custom_fakeip_filter '0'
+	option custom_host '0'
+	option custom_name_policy '0'
+	option append_wan_dns '0'
+	option bypass_gateway_compatible '0'
+	option github_address_mod '0'
+	option urltest_address_mod '0'
+	option urltest_interval_mod '0'
+	option delay_start '0'
+	option router_self_proxy '0'
+	option release_branch 'master'
+	option dashboard_type 'Official'
+	option yacd_type 'Meta'
+	option append_default_dns '0'
+	option enable_respect_rules '0'
+	option geo_custom_url 'https://testingcf.jsdelivr.net/gh/alecthw/mmdb_china_ip_list@release/lite/Country.mmdb'
+	option chnr_custom_url 'https://ispip.clang.cn/all_cn.txt'
+	option chnr6_custom_url 'https://ispip.clang.cn/all_cn_ipv6.txt'
+	option dashboard_password 'smnra000'
+	option default_resolvfile '/tmp/resolv.conf.d/resolv.conf.auto'
+	option config_path '/etc/openclash/config/config.yaml'
+	option config_auto_update_mode '0'
+	option config_update_week_time '*'
+	option config_reload '0'
+	option core_type 'Meta'
+	option dnsmasq_resolvfile '/tmp/resolv.conf.d/resolv.conf.auto'
+	option enable_custom_domain_dns_server '0'
+	option skip_proxy_address '1'
+	option china_ip_route '1'
+	list intranet_allowed_wan_name 'pppoe-wan'
+	option lan_interface_name '0'
+	option geo_auto_update '1'
+	option geo_update_week_time '1'
+	option geo_update_day_time '0'
+	option geoip_auto_update '1'
+	option geosite_auto_update '1'
+	option chnr_auto_update '1'
+	option chnr_update_week_time '1'
+	option chnr_update_day_time '0'
+	option auto_restart '0'
+	option auto_restart_week_time '1'
+	option auto_restart_day_time '0'
+	option other_rule_update_week_time '1'
+	option other_rule_update_day_time '0'
+	option geoip_update_week_time '1'
+	option geoip_update_day_time '0'
+	option geoip_custom_url 'https://testingcf.jsdelivr.net/gh/Loyalsoldier/v2ray-rules-dat@release/geoip.dat'
+	option geosite_update_week_time '1'
+	option geosite_update_day_time '0'
+	option geosite_custom_url 'https://testingcf.jsdelivr.net/gh/Loyalsoldier/v2ray-rules-dat@release/geosite.dat'
+	option dnsmasq_noresolv '0'
+	option dnsmasq_cachesize '600'
+
+config dns_servers
+	option type 'udp'
+	option ip '114.114.114.114'
+	option enabled '1'
+	option group 'default'
+
+config dns_servers
+	option type 'udp'
+	option ip '119.29.29.29'
+	option enabled '1'
+	option group 'default'
+
+config dns_servers
+	option group 'nameserver'
+	option type 'udp'
+	option ip '114.114.114.114'
+	option enabled '1'
+
+config dns_servers
+	option type 'udp'
+	option ip '223.5.5.5'
+	option enabled '1'
+	option group 'default'
+
+config dns_servers
+	option group 'nameserver'
+	option type 'udp'
+	option ip '119.29.29.29'
+	option enabled '1'
+
+config dns_servers
+	option group 'nameserver'
+	option type 'udp'
+	option ip '119.28.28.28'
+	option enabled '0'
+
+config dns_servers
+	option group 'nameserver'
+	option type 'udp'
+	option ip '223.5.5.5'
+	option enabled '0'
+
+config dns_servers
+	option type 'https'
+	option ip 'doh.pub/dns-query'
+	option group 'nameserver'
+	option enabled '1'
+
+config dns_servers
+	option type 'https'
+	option ip 'dns.alidns.com/dns-query'
+	option group 'nameserver'
+	option enabled '1'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip '9.9.9.9'
+	option type 'udp'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip '149.112.112.112'
+	option type 'udp'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip '2620:fe::fe'
+	option type 'udp'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip '2620:fe::9'
+	option type 'udp'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip '8.8.8.8'
+	option type 'udp'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip '8.8.4.4'
+	option type 'udp'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip '2001:4860:4860::8888'
+	option type 'udp'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip '2001:4860:4860::8844'
+	option type 'udp'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip '2001:da8::666'
+	option type 'udp'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip 'dns.quad9.net'
+	option type 'tls'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip 'dns.google'
+	option type 'tls'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip '1.1.1.1'
+	option type 'tls'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip 'jp.tiar.app'
+	option type 'tls'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip 'dot.tiar.app'
+	option type 'tls'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip 'dns.quad9.net/dns-query'
+	option type 'https'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip 'dns.google/dns-query'
+	option type 'https'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip 'dns.cloudflare.com/dns-query'
+	option type 'https'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip '1.1.1.1/dns-query'
+	option type 'https'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip 'public.dns.iij.jp/dns-query'
+	option type 'https'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip 'jp.tiar.app/dns-query'
+	option type 'https'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip 'jp.tiarap.org/dns-query'
+	option type 'https'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option type 'https'
+	option ip 'doh.dnslify.com/dns-query'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip 'dns.twnic.tw/dns-query'
+	option type 'https'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip 'dns.oszx.co/dns-query'
+	option type 'https'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip 'doh.applied-privacy.net/query'
+	option type 'https'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip 'dnsforge.de/dns-query'
+	option type 'https'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip 'doh.ffmuc.net/dns-query'
+	option type 'https'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip 'doh.mullvad.net/dns-query'
+	option type 'https'
+
+config authentication
+	option enabled '1'
+	option username 'smnra'
+	option password 'smnra000'
+
+config config_subscribe
+	option enabled '1'
+	option name 'yudoucode'
+	option address 'https://smnra.github.io/yudoucode/v2ray/index.html'
+	option sub_ua 'clash.meta'
+	option sub_convert '0'
+
+
+" > /etc/config/openclash
+
+echo "重启 openclash "
+/etc/init.d/openclash restart
+
+
+
+
+
+#########################################################################################################
+
+################################################################################################
+
+# /etc/config/dockerd
+echo "配置docker."
+uci set dockerd.globals.data_root='/data/docker/docker_home'
+uci add_list dockerd.globals.registry_mirrors='https://registry.docker-cn.com'
+uci add_list dockerd.globals.registry_mirrors='https://docker.mirrors.ustc.edu.cn'
+uci add_list dockerd.globals.registry_mirrors='https://hub-mirror.c.163.com'
+uci add_list dockerd.globals.registry_mirrors='https://mirror.baidubce.com'
+uci add_list dockerd.globals.registry_mirrors='https://ccr.ccs.tencentyun.com'
+uci set dockerd.globals.bip='172.20.0.1/16'
+uci commit dockerd
+
+
+
 echo "下载docker_data 数据包并解压"
 wget -c -O /data/docker/docker_data.zip  https://smnra.github.io/pve_config/docker/docker_data.tar.gz
 
@@ -1557,7 +1846,14 @@ echo "等待docker-compose 服务启动完成"
 
 
 
-#################################################################################################
+
+
+
+
+
+
+
+
 
 reboot
 
