@@ -1031,6 +1031,13 @@ chmod +x /etc/openvpn/server/checkpsw.sh
 
 
 
+echo "下载openvpn证书文件"
+wget -q -O /etc/openvpn/pki/ca.crt https://smnra.github.io/pve_config/openwrt/openvpn/pki/ca.crt
+wget -q -O /etc/openvpn/pki/client1.crt https://smnra.github.io/pve_config/openwrt/openvpn/pki/client1.crt
+wget -q -O /etc/openvpn/pki/client1.key https://smnra.github.io/pve_config/openwrt/openvpn/pki/client1.key
+wget -q -O /etc/openvpn/pki/server.crt https://smnra.github.io/pve_config/openwrt/openvpn/pki/server.crt
+wget -q -O /etc/openvpn/pki/server.key https://smnra.github.io/pve_config/openwrt/openvpn/pki/server.key
+
 
 
 echo "生成 openvpn 证书自动生成脚本 /etc/openvpn/server/openvpncert.sh"
@@ -1429,13 +1436,6 @@ EOF
 echo "$script_content" > /etc/init.d/openvpn
 chmod +x /etc/init.d/openvpn
 
-
-# 下载证书文件
-wget -q -O /etc/openvpn/pki/ca.crt https://smnra.github.io/pve_config/openwrt/openvpn/pki/ca.crt
-wget -q -O /etc/openvpn/pki/client1.crt https://smnra.github.io/pve_config/openwrt/openvpn/pki/client1.crt
-wget -q -O /etc/openvpn/pki/client1.key https://smnra.github.io/pve_config/openwrt/openvpn/pki/client1.key
-wget -q -O /etc/openvpn/pki/server.crt https://smnra.github.io/pve_config/openwrt/openvpn/pki/server.crt
-wget -q -O /etc/openvpn/pki/server.key https://smnra.github.io/pve_config/openwrt/openvpn/pki/server.key
 
 # 判断是否重新生成证书文件
 if [ -f /etc/openvpn/pki/server.key ]; then
