@@ -88,12 +88,12 @@ echo 'opkg update'
 opkg update
 
 echo '无线网卡 mt7921e 软件包安装.   bypass'
-# opkg install iw-full kmod-mt7921e hostapd-openssl
+opkg install iw-full kmod-mt7921e hostapd-openssl
+opkg install luci-app-zerotier
 
 opkg install wol etherwake luci-app-wol luci-i18n-wol-zh-cn
 opkg install docker-compose
 opkg install iptvhelper
-# opkg install zerotier luci-app-zerotier
 # opkg install headscale
 # opkg install vlmcsd luci-app-vlmcsd
 ##################################################################################################
@@ -300,6 +300,18 @@ config host
     option name 'Oneplus3T'
     option ip '192.168.10.204'
     option mac 'C0:EE:FB:E9:5C:12'
+    option dns '1'
+
+config host
+    option name 'MiAiSoundbox'
+    option ip '192.168.10.205'
+    option mac 'E0:B6:55:66:74:23'
+    option dns '1'
+
+config host
+    option name 'OPPO-Reno13'
+    option ip '192.168.10.205'
+    option mac '06:D1:E9:5E:62:4B'
     option dns '1'
 
 config host
@@ -540,7 +552,7 @@ config my-dnshelper
     option time_update '24'
     option app_check '1'
     list url 'https://fastly.jsdelivr.net/gh/privacy-protection-tools/anti-AD@master/adblock-for-dnsmasq.conf'
-    list url 'https://fastly.jsdelivr.net/gh/AdguardTeam/AdGuardSDNSFilter@gh-pages/Filters/filter.txt'
+#    list url 'https://fastly.jsdelivr.net/gh/AdguardTeam/AdGuardSDNSFilter@gh-pages/Filters/filter.txt'
 #    list url 'https://fastly.jsdelivr.net/gh/Cats-Team/AdRules/hosts.txt'
 #    list url 'https://fastly.jsdelivr.net/gh/VeleSila/yhosts/hosts.txt'
 #    list url 'https://fastly.jsdelivr.net/gh/kongfl888/ad-rules/malhosts.txt'
