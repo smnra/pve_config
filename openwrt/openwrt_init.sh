@@ -361,8 +361,8 @@ config redirect
     option src 'wan'
     option dest_ip '192.168.10.2'
     option name 'pve_ssh'
-    option src_dport '8002'
-    option dest_port '8006'
+    option src_dport '9002'
+    option dest_port '22'
   list proto 'tcp'
 
 config redirect
