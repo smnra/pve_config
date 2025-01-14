@@ -2160,7 +2160,7 @@ docker pull thedrobe/iventoy-docker:latest
 
 # echo "启动docker-compose 服务"
 # cd  /data/docker/docker_data/
-# docker-compose -f /data/docker/docker_data/all_docker-compose.yaml up -d
+# docker-compose -f /data/docker/docker_data/all_docker-compose.yml up -d
 #
 # echo "等待docker-compose 服务启动完成"
 
