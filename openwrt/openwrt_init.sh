@@ -57,24 +57,6 @@ download_with_retry() {
 
 
 ########################################################################################################################
-echo "修改dnsmasq配置的本地服务器地址 配置文件.  #"
-# 获取 br-lan 接口的 IP 地址
-BR_LAN_IP=$(ip -4 addr show br-lan | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
-
-# 检查是否成功获取 IP 地址
-if [ -z "$BR_LAN_IP" ]; then
-    echo "未能获取 br-lan 接口的 IP 地址"
-    exit 1
-fi
-
-# 使用 sed 替换文件中的 127.0.0.1
-sed -i "s/127\.0\.0\.1/${BR_LAN_IP}/g" /tmp/resolv.conf
-
-
-
-
-
-########################################################################################################################
 echo "修改/dev/sda3挂载为 /data, 当前 分区挂载情况:   #######################################################################"
 lsblk -o NAME,FSTYPE,UUID,MOUNTPOINT
 mkdir -p /data
@@ -133,8 +115,15 @@ mkdir -p /data/docker/docker_data
 
 ########################################################################################################################
 echo "下载安装 7zip 命令 7zz  到 /data/app/7zz   ##########################################################################"
-download_with_retry https://cdn.jsdelivr.net/gh/smnra/pve_config/openwrt/tools/7zip/7zz  /data/app/7zz
-# 使用 cdn加速  cdn.jsdelivr.net 下载 https://smnra.github.io/pve_config/openwrt/tools/7zip/7zz
+download_with_retry https://cdn.jsdmirror.com/gh/smnra/pve_config/openwrt/tools/7zip/7zz  /data/app/7zz
+echo "# 使用 cdn加速  fastly.jsdelivr.net 下载 https://smnra.github.io/pve_config/openwrt/tools/7zip/7zz
+
+
+https://fastly.jsdelivr.net/gh/smnra/pve_config/openwrt/tools/7zip/7zz
+https://cdn.jsdmirror.com/gh/smnra/pve_config/openwrt/openclash/tools/7zip/7zz  国内速度快
+
+
+"
 chmod +x /data/app/7zz
 ln -s /data/app/7zz  /usr/bin/7zz
 ########################################################################################################################
@@ -740,11 +729,11 @@ config my-dnshelper
     option my_github '1'
     option time_update '24'
     option app_check '1'
-    list url 'https://fastly.jsdelivr.net/gh/privacy-protection-tools/anti-AD@master/adblock-for-dnsmasq.conf'
-#    list url 'https://fastly.jsdelivr.net/gh/AdguardTeam/AdGuardSDNSFilter@gh-pages/Filters/filter.txt'
-#    list url 'https://fastly.jsdelivr.net/gh/Cats-Team/AdRules/hosts.txt'
-#    list url 'https://fastly.jsdelivr.net/gh/VeleSila/yhosts/hosts.txt'
-#    list url 'https://fastly.jsdelivr.net/gh/kongfl888/ad-rules/malhosts.txt'
+    list url 'https://cdn.jsdmirror.com/gh/privacy-protection-tools/anti-AD@master/adblock-for-dnsmasq.conf'
+#    list url 'https://cdn.jsdmirror.com/gh/AdguardTeam/AdGuardSDNSFilter@gh-pages/Filters/filter.txt'
+#    list url 'https://cdn.jsdmirror.com/gh/Cats-Team/AdRules/hosts.txt'
+#    list url 'https://cdn.jsdmirror.com/gh/VeleSila/yhosts/hosts.txt'
+#    list url 'https://cdn.jsdmirror.com/gh/kongfl888/ad-rules/malhosts.txt'
 " > /etc/config/my-dnshelper
 
 # /etc/init.d/my-dnshelper enable
@@ -1718,32 +1707,32 @@ echo "smnra smnra000
 
 if [ ! -f "/etc/openvpn/pki/ca.crt" ]; then
     echo "缺少ca.crt文件, 开始下载..."
-    download_with_retry https://cdn.jsdelivr.net/gh/smnra/pve_config/openwrt/openvpn/pki/ca.crt /etc/openvpn/pki/ca.crt
+    download_with_retry https://cdn.jsdmirror.com/gh/smnra/pve_config/openwrt/openvpn/pki/ca.crt /etc/openvpn/pki/ca.crt
 fi
 
 if [ ! -f "/etc/openvpn/pki/dh.pem" ]; then
     echo "缺少dh.pem文件, 开始下载..."
-    download_with_retry https://cdn.jsdelivr.net/gh/smnra/pve_config/openwrt/openvpn/pki/dh.pem /etc/openvpn/pki/dh.pem
+    download_with_retry https://cdn.jsdmirror.com/gh/smnra/pve_config/openwrt/openvpn/pki/dh.pem /etc/openvpn/pki/dh.pem
 fi
 
 if [ ! -f "/etc/openvpn/pki/server.crt" ]; then
     echo "缺少server.crt文件, 开始下载..."
-    download_with_retry https://cdn.jsdelivr.net/gh/smnra/pve_config/openwrt/openvpn/pki/server.crt /etc/openvpn/pki/server.crt
+    download_with_retry https://cdn.jsdmirror.com/gh/smnra/pve_config/openwrt/openvpn/pki/server.crt /etc/openvpn/pki/server.crt
 fi
 
 if [ ! -f "/etc/openvpn/pki/server.key" ]; then
     echo "缺少server.key文件, 开始下载..."
-    download_with_retry https://cdn.jsdelivr.net/gh/smnra/pve_config/openwrt/openvpn/pki/server.key /etc/openvpn/pki/server.key
+    download_with_retry https://cdn.jsdmirror.com/gh/smnra/pve_config/openwrt/openvpn/pki/server.key /etc/openvpn/pki/server.key
 fi
 
 if [ ! -f "/etc/openvpn/pki/client1.crt" ]; then
     echo "缺少client1.crt文件, 开始下载..."
-    download_with_retry https://cdn.jsdelivr.net/gh/smnra/pve_config/openwrt/openvpn/pki/client1.crt /etc/openvpn/pki/client1.crt
+    download_with_retry https://cdn.jsdmirror.com/gh/smnra/pve_config/openwrt/openvpn/pki/client1.crt /etc/openvpn/pki/client1.crt
 fi
 
 if [ ! -f "/etc/openvpn/pki/client1.key" ]; then
     echo "缺少client1.key文件, 开始下载..."
-    download_with_retry https://cdn.jsdelivr.net/gh/smnra/pve_config/openwrt/openvpn/pki/client1.key /etc/openvpn/pki/client1.key
+    download_with_retry https://cdn.jsdmirror.com/gh/smnra/pve_config/openwrt/openvpn/pki/client1.key /etc/openvpn/pki/client1.key
 fi
 
 sleep 5
@@ -1767,7 +1756,7 @@ if [ -f /etc/openclash/config/config.yaml ]; then
     echo "/etc/openclash/config/config.yaml openclash 配置文件已存在，跳过下载"
 else
     echo "下载 https://smnra.github.io/pve_config/openwrt/openclash/config.yaml 写入 /etc/openclash/config/config.yaml"
-    download_with_retry https://cdn.jsdelivr.net/gh/smnra/pve_config/openwrt/openclash/config.yaml /etc/openclash/config/config.yaml
+    download_with_retry https://cdn.jsdmirror.com/gh/smnra/pve_config/openwrt/openclash/config.yaml /etc/openclash/config/config.yaml
 fi
 
 # openclash 核心文件
@@ -1775,8 +1764,8 @@ if [ -f /etc/openclash/core/clash_meta ]; then
     echo "/etc/openclash/core/clash_meta openclash 核心文件已存在，跳过下载"
 else
     echo "下载 https://smnra.github.io/pve_config/openwrt/openclash/core/clash.meta 写入 /etc/openclash/core/clash_meta"
-    # 使用 cdn.jsdelivr.net  cdn加速下载 https://cdn.jsdelivr.net/gh/smnra/pve_config/openwrt/openclash/core/clash_meta
-    download_with_retry https://cdn.jsdelivr.net/gh/smnra/pve_config/openwrt/openclash/core/clash_meta /etc/openclash/core/clash_meta
+    # 使用 fastly.jsdelivr.net  cdn加速下载 https://fastly.jsdelivr.net/gh/smnra/pve_config/openwrt/openclash/core/clash_meta
+    download_with_retry https://cdn.jsdmirror.com/gh/smnra/pve_config/openwrt/openclash/core/clash_meta /etc/openclash/core/clash_meta
 fi
 
 
@@ -2152,7 +2141,7 @@ uci commit dockerd
 
 
 # echo "下载docker_data 数据包并解压"
-# wget -c -O /data/docker/docker_data.7z  https://smnra.github.io/pve_config/docker/docker_data.7z
+# wget -c -O /data/docker/docker_data.7z  https://cdn.jsdmirror.com/gh/smnra/pve_config/docker/docker_data.7z
 # cd /data/docker/
 # 7zz x -psmnra000 /data/docker/docker_data.7z -o/data/app/
 # mv /data/docker/all_docker-compose.yml /data/docker/docker_data/all_docker-compose.yml
@@ -2160,7 +2149,7 @@ uci commit dockerd
 
 
 echo "下载docker-compose 配置文件"
-wget -c -O /data/docker/docker_data/all_docker-compose.yml  https://cdn.jsdelivr.net/gh/smnra/pve_config/docker/all_docker-compose.yml
+wget -c -O /data/docker/docker_data/all_docker-compose.yml  https://cdn.jsdmirror.com/gh/smnra/pve_config/docker/all_docker-compose.yml
 
 echo "docker 镜像下载"
 docker pull tznb/twonav:latest
