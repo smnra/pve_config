@@ -49,28 +49,8 @@ download_with_retry() {
     fi
 }
 
-# 使用函数示例
-if [ $# -lt 2 ]; then
-    echo "Usage: $0 <URL> <OUTPUT_FILE> [MAX_RETRIES]"
-    exit 1
-fi
 
 # download_with_retry http://example.com/file.zip  /root/file.zip
-
-
-
-########################################################################################################################
-echo "下载安装 7zip 命令 7zz  到 /data/app/7zz   ##########################################################################"
-download_with_retry https://smnra.github.io/pve_config/openwrt/tools/7zip/7zz  /data/app/7zz
-chmod +x /data/app/7zz
-ln -s /data/app/7zz  /usr/bin/7zz
-########################################################################################################################
-
-
-
-
-
-
 
 
 
@@ -133,6 +113,18 @@ mkdir -p /data/docker/docker_data
 
 
 
+########################################################################################################################
+echo "下载安装 7zip 命令 7zz  到 /data/app/7zz   ##########################################################################"
+download_with_retry https://cdn.jsdelivr.net/gh/smnra/pve_config/openwrt/tools/7zip/7zz  /data/app/7zz
+# 使用 cdn加速  cdn.jsdelivr.net 下载 https://smnra.github.io/pve_config/openwrt/tools/7zip/7zz
+chmod +x /data/app/7zz
+ln -s /data/app/7zz  /usr/bin/7zz
+########################################################################################################################
+
+
+
+
+
 
 ########################################################################################################################
 echo "安装软件包 #########################################################################################################"
@@ -160,12 +152,15 @@ opkg install vlmcsd luci-app-vlmcsd
 echo '安装统一文件共享  支持webdav协议'
 opkg install luci-app-unishare
 
-echo '安装 luci-app-my-dnshelper DNS管理与去广告'
-opkg install luci-app-my-dnshelper
-
-# opkg install headscale
-
-
+# echo '安装 luci-app-my-dnshelper DNS管理与去广告'
+# opkg install luci-app-my-dnshelper
+#
+# echo '安装 ddns 软件包'
+# opkg install luci-app-ddns
+#
+# echo '安装 openvpn 服务器软件包'
+# opkg install luci-app-openvpn-server
+#
 
 ########################################################################################################################
 echo '设置中文语言'
@@ -372,7 +367,7 @@ config host
 
 config host
     option name 'OPPO-Reno13'
-    option ip '192.168.10.205'
+    option ip '192.168.10.206'
     option mac '06:D1:E9:5E:62:4B'
     option dns '1'
 
@@ -990,6 +985,9 @@ fi
 
 ########################################################################################################################
 echo "openvpn 配置    ###################################################################################################"
+echo "创建openvpn证书文件目录 /etc/openvpn/pki"
+mkdir -p /etc/openvpn/pki
+
 
 echo "生成 openvpn 帐号检查脚本 /etc/openvpn/server/checkpsw.sh"
 # 定义 checkpsw.sh 脚本内容
@@ -1698,42 +1696,36 @@ echo "smnra smnra000
 " > /etc/openvpn/server/psw-file
 
 
-echo "创建openvpn证书文件目录 /etc/openvpn/pki"
-mkdir -p /etc/openvpn/pki
-
-
-
-
 
 
 if [ ! -f "/etc/openvpn/pki/ca.crt" ]; then
     echo "缺少ca.crt文件, 开始下载..."
-    download_with_retry https://smnra.github.io/pve_config/openwrt/openvpn/pki/ca.crt /etc/openvpn/pki/ca.crt
+    download_with_retry https://cdn.jsdelivr.net/gh/smnra/pve_config/openwrt/openvpn/pki/ca.crt /etc/openvpn/pki/ca.crt
 fi
 
 if [ ! -f "/etc/openvpn/pki/dh.pem" ]; then
     echo "缺少dh.pem文件, 开始下载..."
-    download_with_retry https://smnra.github.io/pve_config/openwrt/openvpn/pki/dh.pem /etc/openvpn/pki/dh.pem
+    download_with_retry https://cdn.jsdelivr.net/gh/smnra/pve_config/openwrt/openvpn/pki/dh.pem /etc/openvpn/pki/dh.pem
 fi
 
 if [ ! -f "/etc/openvpn/pki/server.crt" ]; then
     echo "缺少server.crt文件, 开始下载..."
-    download_with_retry https://smnra.github.io/pve_config/openwrt/openvpn/pki/server.crt /etc/openvpn/pki/server.crt
+    download_with_retry https://cdn.jsdelivr.net/gh/smnra/pve_config/openwrt/openvpn/pki/server.crt /etc/openvpn/pki/server.crt
 fi
 
 if [ ! -f "/etc/openvpn/pki/server.key" ]; then
     echo "缺少server.key文件, 开始下载..."
-    download_with_retry https://smnra.github.io/pve_config/openwrt/openvpn/pki/server.key /etc/openvpn/pki/server.key
+    download_with_retry https://cdn.jsdelivr.net/gh/smnra/pve_config/openwrt/openvpn/pki/server.key /etc/openvpn/pki/server.key
 fi
 
 if [ ! -f "/etc/openvpn/pki/client1.crt" ]; then
     echo "缺少client1.crt文件, 开始下载..."
-    download_with_retry https://smnra.github.io/pve_config/openwrt/openvpn/pki/client1.crt /etc/openvpn/pki/client1.crt
+    download_with_retry https://cdn.jsdelivr.net/gh/smnra/pve_config/openwrt/openvpn/pki/client1.crt /etc/openvpn/pki/client1.crt
 fi
 
 if [ ! -f "/etc/openvpn/pki/client1.key" ]; then
     echo "缺少client1.key文件, 开始下载..."
-    download_with_retry https://smnra.github.io/pve_config/openwrt/openvpn/pki/client1.key /etc/openvpn/pki/client1.key
+    download_with_retry https://cdn.jsdelivr.net/gh/smnra/pve_config/openwrt/openvpn/pki/client1.key /etc/openvpn/pki/client1.key
 fi
 
 sleep 5
@@ -1757,15 +1749,16 @@ if [ -f /etc/openclash/config/config.yaml ]; then
     echo "/etc/openclash/config/config.yaml openclash 配置文件已存在，跳过下载"
 else
     echo "下载 https://smnra.github.io/pve_config/openwrt/openclash/config.yaml 写入 /etc/openclash/config/config.yaml"
-    download_with_retry https://smnra.github.io/pve_config/openwrt/openclash/config.yaml /etc/openclash/config/config.yaml
+    download_with_retry https://cdn.jsdelivr.net/gh/smnra/pve_config/openwrt/openclash/config.yaml /etc/openclash/config/config.yaml
 fi
 
 # openclash 核心文件
 if [ -f /etc/openclash/core/clash_meta ]; then
     echo "/etc/openclash/core/clash_meta openclash 核心文件已存在，跳过下载"
 else
-    echo "下载 https://smnra.github.io/pve_config/openwrt/openclash/core/clash_meta 写入 /etc/openclash/core/clash_meta"
-    download_with_retry https://smnra.github.io/pve_config/openwrt/openclash/core/clash_meta /etc/openclash/core/clash_meta
+    echo "下载 https://smnra.github.io/pve_config/openwrt/openclash/core/clash.meta 写入 /etc/openclash/core/clash_meta"
+    # 使用 cdn.jsdelivr.net  cdn加速下载 https://cdn.jsdelivr.net/gh/smnra/pve_config/openwrt/openclash/core/clash_meta
+    download_with_retry https://cdn.jsdelivr.net/gh/smnra/pve_config/openwrt/openclash/core/clash_meta /etc/openclash/core/clash_meta
 fi
 
 
@@ -1777,7 +1770,7 @@ echo "
 config openclash 'config'
 	option http_port '7890'
 	option dns_port '7874'
-	option enable '1'
+	option enable '0'
 	option update '0'
 	option en_mode 'redir-host'
 	option auto_update '1'
@@ -2101,8 +2094,8 @@ config config_subscribe
 
 " > /etc/config/openclash
 
-echo "重启 openclash "
-/etc/init.d/openclash restart
+# echo "重启 openclash "
+#/etc/init.d/openclash restart
 
 ########################################################################################################################
 
@@ -2118,13 +2111,26 @@ echo "重启 openclash "
 # /etc/config/dockerd
 echo "配置docker.     ###################################################################################################"
 uci set dockerd.globals.data_root='/data/docker/docker_home'
-uci add_list dockerd.globals.registry_mirrors='https://registry.linkease.net:5443'
-uci add_list dockerd.globals.registry_mirrors='https://hub-mirror.c.163.com'
+uci add_list dockerd.globals.registry_mirrors="https://docker.hpcloud.cloud"
+uci add_list dockerd.globals.registry_mirrors="https://docker.m.daocloud.io"
+uci add_list dockerd.globals.registry_mirrors="https://docker.unsee.tech"
+uci add_list dockerd.globals.registry_mirrors="https://docker.1panel.live"
+uci add_list dockerd.globals.registry_mirrors="http://mirrors.ustc.edu.cn"
+uci add_list dockerd.globals.registry_mirrors="https://docker.chenby.cn"
+uci add_list dockerd.globals.registry_mirrors="http://mirror.azure.cn"
+uci add_list dockerd.globals.registry_mirrors="https://dockerpull.org"
+uci add_list dockerd.globals.registry_mirrors="https://dockerhub.icu"
+uci add_list dockerd.globals.registry_mirrors="https://hub.rat.dev"
+uci add_list dockerd.globals.registry_mirrors="https://proxy.1panel.live"
+uci add_list dockerd.globals.registry_mirrors="https://docker.1panel.top"
+uci add_list dockerd.globals.registry_mirrors="https://docker.m.daocloud.io"
+uci add_list dockerd.globals.registry_mirrors="https://docker.1ms.run"
+uci add_list dockerd.globals.registry_mirrors="https://docker.ketches.cn"
+
 uci set dockerd.globals.bip='172.20.0.1/16'
 uci commit dockerd
 
-
-
+/etc/init.d/dockerd restart
 
 
 # echo "下载docker_data 数据包并解压"
@@ -2136,7 +2142,7 @@ uci commit dockerd
 
 
 echo "下载docker-compose 配置文件"
-wget -c -O /data/docker/docker_data/all_docker-compose.yml  https://smnra.github.io/pve_config/docker/all_docker-compose.yml
+wget -c -O /data/docker/docker_data/all_docker-compose.yml  https://cdn.jsdelivr.net/gh/smnra/pve_config/docker/all_docker-compose.yml
 
 echo "docker 镜像下载"
 docker pull tznb/twonav:latest
@@ -2145,13 +2151,11 @@ docker pull smnrao/python_flask_docker:latest
 docker pull thedrobe/iventoy-docker:latest
 
 
-echo "启动docker-compose 服务"
-cd  /data/docker/docker_data/
-docker-compose -f /data/docker/docker_data/all_docker-compose.yaml up -d
-
-echo "等待docker-compose 服务启动完成"
-
-
+# echo "启动docker-compose 服务"
+# cd  /data/docker/docker_data/
+# docker-compose -f /data/docker/docker_data/all_docker-compose.yaml up -d
+#
+# echo "等待docker-compose 服务启动完成"
 
 
 
@@ -2162,6 +2166,8 @@ echo "等待docker-compose 服务启动完成"
 
 
 
-reboot
+
+
+# reboot
 
 exit 0
