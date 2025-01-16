@@ -158,8 +158,8 @@ opkg install luci-app-unishare
 echo '安装微信推送软件包'
 opkg install luci-app-wechatpush
 
-# echo '安装 应用过滤 软件包'
-# opkg install luci-app-oaf
+echo '安装 zoneinfo 软件包 解决 dockers 时间问题.  /etc/localtime:/etc/localtime  映射报错'
+opkg install zoneinfo
 
 # echo '安装 luci-app-my-dnshelper DNS管理与去广告'
 # opkg install luci-app-my-dnshelper
@@ -541,6 +541,24 @@ config redirect
     option src_dport '8102'
     option dest_ip '192.168.10.1'
     option dest_port '7890'
+    
+config redirect
+	option dest 'lan'
+	option target 'DNAT'
+	option name 'vnc'
+	option src 'wan'
+	option src_dport '8103'
+	option dest_ip '100.100.0.2'
+	option dest_port '8887'
+
+config redirect
+	option dest 'lan'
+	option target 'DNAT'
+	option name 'vnc_web'
+	option src 'wan'
+	option src_dport '8104'
+	option dest_ip '100.100.0.2'
+	option dest_port '8888'
 
 config redirect
     option dest 'lan'
@@ -2192,7 +2210,7 @@ uci add_list dockerd.globals.registry_mirrors="https://docker.m.daocloud.io"
 uci add_list dockerd.globals.registry_mirrors="https://docker.1ms.run"
 uci add_list dockerd.globals.registry_mirrors="https://docker.ketches.cn"
 
-uci set dockerd.globals.bip='172.20.0.1/16'
+# uci set dockerd.globals.bip='172.20.0.1/16'
 uci commit dockerd
 
 /etc/init.d/dockerd restart

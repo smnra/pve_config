@@ -56,7 +56,7 @@ services:
     ports:
       - 8204:3000
     volumes:
-      - "/etc/localtime:/etc/localtime"
+#      - "/etc/localtime:/etc/localtime"
       - "/data/docker/docker_data/mi-gpt/run.sh:/app/run.sh"
       - "/data/docker/docker_data/mi-gpt/.migpt.js:/app/.migpt.js"
       - "/data/docker/docker_data/mi-gpt/mi-gpt-tts-3.0.0:/app/mi-gpt-tts-3.0.0"
