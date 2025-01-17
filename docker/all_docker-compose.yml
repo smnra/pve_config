@@ -58,11 +58,11 @@ services:
       docker_net:
         ipv4_address: "172.20.0.4"
     ports:
-      - "8204:8001"
-      - "8214:8002"
-      - "8224:8003"
-      - "8234:8004"
-      - "8244:8005"
+      - "8001:8001"
+      - "8002:8002"
+      - "8003:8003"
+      - "8004:8004"
+      - "8005:8005"
     volumes:
       - "/data/docker/docker_data/python_flask_docker/app:/app"
 

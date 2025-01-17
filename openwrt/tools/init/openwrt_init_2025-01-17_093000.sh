@@ -564,7 +564,7 @@ config redirect
     option src 'wan'
     option src_dport '8204'
     option dest_ip '192.168.10.1'
-    option dest_port '8204'
+    option dest_port '8001'
 
 config redirect
     option dest 'lan'
@@ -573,7 +573,7 @@ config redirect
     option src 'wan'
     option src_dport '8214'
     option dest_ip '192.168.10.1'
-    option dest_port '8214'
+    option dest_port '8002'
 
 config redirect
     option dest 'lan'
@@ -582,7 +582,7 @@ config redirect
     option src 'wan'
     option src_dport '8224'
     option dest_ip '192.168.10.1'
-    option dest_port '8224'
+    option dest_port '8003'
 
 config redirect
     option dest 'lan'
@@ -591,7 +591,7 @@ config redirect
     option src 'wan'
     option src_dport '8234'
     option dest_ip '192.168.10.1'
-    option dest_port '8234'
+    option dest_port '8004'
 
 config redirect
     option dest 'lan'
@@ -600,7 +600,7 @@ config redirect
     option src 'wan'
     option src_dport '8244'
     option dest_ip '192.168.10.1'
-    option dest_port '8244'
+    option dest_port '8005'
 
 
 " >> /etc/config/firewall
