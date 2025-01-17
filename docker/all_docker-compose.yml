@@ -26,25 +26,9 @@ services:
     networks:
       docker_net:
         ipv4_address: "172.20.0.2"
-        ipv6_address: "240e:35c:7fa:c900:1::2"
+#        ipv6_address: "240e:35c:7fa:c900:1::2"
     ports:
       - 8202:80
-
-
-  python_flask_docker:
-    image: smnrao/python_flask_docker:latest
-    container_name: "python_flask_docker"
-    restart: always
-    networks:
-      docker_net:
-        ipv4_address: "172.20.0.3"
-    ports:
-      - "8203:2222"
-      - "8213:8780"
-      - "8223:5000"
-    volumes:
-      - "/data/docker/docker_data/python_flask_docker/app:/app"
-
 
   mi-gpt:
     image: idootop/mi-gpt:latest
@@ -52,9 +36,9 @@ services:
     restart: always
     networks:
       docker_net:
-        ipv4_address: "172.20.0.4"
+        ipv4_address: "172.20.0.3"
     ports:
-      - 8204:3000
+      - 8203:3000
     volumes:
 #      - "/etc/localtime:/etc/localtime"
       - "/data/docker/docker_data/mi-gpt/run.sh:/app/run.sh"
@@ -64,6 +48,28 @@ services:
     env_file:
       - /data/docker/docker_data/mi-gpt/.env
     command: sh -c "cd /app/ && sh /app/run.sh "
+
+
+  python_flask_docker:
+    image: smnrao/python_flask_docker:latest
+    container_name: "python_flask_docker"
+    restart: always
+    networks:
+      docker_net:
+        ipv4_address: "172.20.0.4"
+    ports:
+      - "8204:8001"
+      - "8214:8002"
+      - "8224:8003"
+      - "8234:8004"
+      - "8244:8005"
+    volumes:
+      - "/data/docker/docker_data/python_flask_docker/app:/app"
+
+
+
+
+
 
 
 #  ventoy: 
