@@ -143,23 +143,15 @@ opkg install luci-app-zerotier
 echo '安装局域网唤醒.'
 opkg install wol etherwake luci-app-wol luci-i18n-wol-zh-cn
 
-echo '安装docker-compose软件包'
-opkg install docker-compose
-
 echo '安装tv助手软件包'
 opkg install tvhelper
 
 echo '安装kms软件包'
 opkg install vlmcsd luci-app-vlmcsd
 
-echo '安装统一文件共享  支持webdav协议'
-opkg install luci-app-unishare
-
 echo '安装微信推送软件包'
 opkg install luci-app-wechatpush
 
-echo '安装 zoneinfo 软件包 解决 dockers 时间问题.  /etc/localtime:/etc/localtime  映射报错'
-opkg install zoneinfo
 
 # echo '安装 luci-app-my-dnshelper DNS管理与去广告'
 # opkg install luci-app-my-dnshelper
@@ -170,6 +162,9 @@ opkg install zoneinfo
 # echo '安装 openvpn 服务器软件包'
 # opkg install luci-app-openvpn-server
 #
+#
+# echo '安装docker-compose软件包'
+# opkg install docker-compose
 
 ########################################################################################################################
 echo '设置中文语言'
@@ -533,15 +528,6 @@ config redirect
 config redirect
     option dest 'lan'
     option target 'DNAT'
-    option name 'webdav'
-    option src 'wan'
-    option src_dport '8101'
-    option dest_ip '192.168.10.1'
-    option dest_port '25544'
-
-config redirect
-    option dest 'lan'
-    option target 'DNAT'
     option name 'http_proxy'
     option src 'wan'
     option src_dport '8102'
@@ -554,7 +540,7 @@ config redirect
     option name 'docker_twonav'
     option src 'wan'
     option src_dport '8202'
-    option dest_ip '192.168.10.1'
+    option dest_ip '192.168.10.5'
     option dest_port '8202'
 
 config redirect
@@ -563,8 +549,8 @@ config redirect
     option name 'docker_flask_imgbin'
     option src 'wan'
     option src_dport '8204'
-    option dest_ip '192.168.10.1'
-    option dest_port '8001'
+    option dest_ip '192.168.10.5'
+    option dest_port '8204'
 
 config redirect
     option dest 'lan'
@@ -572,8 +558,8 @@ config redirect
     option name 'docker_flask_webshell_c'
     option src 'wan'
     option src_dport '8214'
-    option dest_ip '192.168.10.1'
-    option dest_port '8002'
+    option dest_ip '192.168.10.5'
+    option dest_port '8214'
 
 config redirect
     option dest 'lan'
@@ -581,8 +567,8 @@ config redirect
     option name 'docker_flask_webshell_b'
     option src 'wan'
     option src_dport '8224'
-    option dest_ip '192.168.10.1'
-    option dest_port '8003'
+    option dest_ip '192.168.10.5'
+    option dest_port '8224'
 
 config redirect
     option dest 'lan'
@@ -590,8 +576,8 @@ config redirect
     option name 'docker_flask_novnc_1'
     option src 'wan'
     option src_dport '8234'
-    option dest_ip '192.168.10.1'
-    option dest_port '8004'
+    option dest_ip '192.168.10.5'
+    option dest_port '8234'
 
 config redirect
     option dest 'lan'
@@ -599,8 +585,26 @@ config redirect
     option name 'docker_flask_novnc_2'
     option src 'wan'
     option src_dport '8244'
-    option dest_ip '192.168.10.1'
-    option dest_port '8005'
+    option dest_ip '192.168.10.5'
+    option dest_port '8244'
+
+config redirect
+    option dest 'lan'
+    option target 'DNAT'
+    option name 'docker_xunlei'
+    option src 'wan'
+    option src_dport '8205'
+    option dest_ip '192.168.10.5'
+    option dest_port '8205'
+
+config redirect
+    option dest 'lan'
+    option target 'DNAT'
+    option name 'docker_aipan'
+    option src 'wan'
+    option src_dport '8206'
+    option dest_ip '192.168.10.6'
+    option dest_port '8206'
 
 
 " >> /etc/config/firewall
@@ -810,38 +814,6 @@ config zerotier 'sample_config'
 #
 # /etc/init.d/my-dnshelper enable
 # /etc/init.d/my-dnshelper start
-
-
-
-
-
-########################################################################################################################
-echo "设置unishare  文件共享  /etc/config/unishare #######################################################################"
-
-echo "
-config global
-    option enabled '1'
-    option anonymous '0'
-    option webdav_port '25544'
-
-config share
-    option path '/data'
-    option name 'data'
-    list rw 'users'
-    list ro 'users'
-    list proto 'samba'
-    list proto 'webdav'
-
-config user
-    option username 'smnra'
-    option password 'smnra000'
-
-" > /etc/config/unishare
-
-echo "启动 unishare"
-/etc/init.d/unishare enable
-/etc/init.d/unishare restart
-
 
 
 
@@ -2186,59 +2158,59 @@ echo "重启 openclash "
 
 
 
-
-
-########################################################################################################################
-# /etc/config/dockerd
-echo "配置docker.     ###################################################################################################"
-uci set dockerd.globals.data_root='/data/docker/docker_home'
-uci add_list dockerd.globals.registry_mirrors="https://docker.hpcloud.cloud"
-uci add_list dockerd.globals.registry_mirrors="https://docker.m.daocloud.io"
-uci add_list dockerd.globals.registry_mirrors="https://docker.unsee.tech"
-uci add_list dockerd.globals.registry_mirrors="https://docker.1panel.live"
-uci add_list dockerd.globals.registry_mirrors="http://mirrors.ustc.edu.cn"
-uci add_list dockerd.globals.registry_mirrors="https://docker.chenby.cn"
-uci add_list dockerd.globals.registry_mirrors="http://mirror.azure.cn"
-uci add_list dockerd.globals.registry_mirrors="https://dockerpull.org"
-uci add_list dockerd.globals.registry_mirrors="https://dockerhub.icu"
-uci add_list dockerd.globals.registry_mirrors="https://hub.rat.dev"
-uci add_list dockerd.globals.registry_mirrors="https://proxy.1panel.live"
-uci add_list dockerd.globals.registry_mirrors="https://docker.1panel.top"
-uci add_list dockerd.globals.registry_mirrors="https://docker.m.daocloud.io"
-uci add_list dockerd.globals.registry_mirrors="https://docker.1ms.run"
-uci add_list dockerd.globals.registry_mirrors="https://docker.ketches.cn"
-
-# uci set dockerd.globals.bip='172.20.0.1/16'
-uci commit dockerd
-
-/etc/init.d/dockerd restart
-
-
-# echo "下载docker_data 数据包并解压"
-# wget -c -O /data/docker/docker_data.7z  https://cdn.jsdmirror.com/gh/smnra/pve_config/docker/docker_data.7z
-# cd /data/docker/
-# 7zz x -psmnra000 /data/docker/docker_data.7z -o/data/app/
-# mv /data/docker/all_docker-compose.yml /data/docker/docker_data/all_docker-compose.yml
-# rm -f  /data/docker/docker_data.7z
-
-
-echo "下载docker-compose 配置文件"
-wget -c -O /data/docker/docker_data/all_docker-compose.yml  https://cdn.jsdmirror.com/gh/smnra/pve_config/docker/all_docker-compose.yml
-
-echo "docker 镜像下载"
-docker pull tznb/twonav:latest
-# docker pull idootop/mi-gpt:latest
-# docker pull smnrao/python_flask_docker:latest
-docker pull thedrobe/iventoy-docker:latest
-
-
-# echo "启动docker-compose 服务"
-# cd  /data/docker/docker_data/
-# docker-compose -f /data/docker/docker_data/all_docker-compose.yml up -d
 #
-# echo "等待docker-compose 服务启动完成"
-
-
+#
+# ########################################################################################################################
+# # /etc/config/dockerd
+# echo "配置docker.     ###################################################################################################"
+# uci set dockerd.globals.data_root='/data/docker/docker_home'
+# uci add_list dockerd.globals.registry_mirrors="https://docker.hpcloud.cloud"
+# uci add_list dockerd.globals.registry_mirrors="https://docker.m.daocloud.io"
+# uci add_list dockerd.globals.registry_mirrors="https://docker.unsee.tech"
+# uci add_list dockerd.globals.registry_mirrors="https://docker.1panel.live"
+# uci add_list dockerd.globals.registry_mirrors="http://mirrors.ustc.edu.cn"
+# uci add_list dockerd.globals.registry_mirrors="https://docker.chenby.cn"
+# uci add_list dockerd.globals.registry_mirrors="http://mirror.azure.cn"
+# uci add_list dockerd.globals.registry_mirrors="https://dockerpull.org"
+# uci add_list dockerd.globals.registry_mirrors="https://dockerhub.icu"
+# uci add_list dockerd.globals.registry_mirrors="https://hub.rat.dev"
+# uci add_list dockerd.globals.registry_mirrors="https://proxy.1panel.live"
+# uci add_list dockerd.globals.registry_mirrors="https://docker.1panel.top"
+# uci add_list dockerd.globals.registry_mirrors="https://docker.m.daocloud.io"
+# uci add_list dockerd.globals.registry_mirrors="https://docker.1ms.run"
+# uci add_list dockerd.globals.registry_mirrors="https://docker.ketches.cn"
+#
+# # uci set dockerd.globals.bip='172.20.0.1/16'
+# uci commit dockerd
+#
+# /etc/init.d/dockerd restart
+#
+#
+# # echo "下载docker_data 数据包并解压"
+# # wget -c -O /data/docker/docker_data.7z  https://cdn.jsdmirror.com/gh/smnra/pve_config/docker/docker_data.7z
+# # cd /data/docker/
+# # 7zz x -psmnra000 /data/docker/docker_data.7z -o/data/app/
+# # mv /data/docker/all_docker-compose.yml /data/docker/docker_data/all_docker-compose.yml
+# # rm -f  /data/docker/docker_data.7z
+#
+#
+# echo "下载docker-compose 配置文件"
+# wget -c -O /data/docker/docker_data/all_docker-compose.yml  https://cdn.jsdmirror.com/gh/smnra/pve_config/docker/all_docker-compose.yml
+#
+# echo "docker 镜像下载"
+# docker pull tznb/twonav:latest
+# # docker pull idootop/mi-gpt:latest
+# # docker pull smnrao/python_flask_docker:latest
+# docker pull thedrobe/iventoy-docker:latest
+#
+#
+# # echo "启动docker-compose 服务"
+# # cd  /data/docker/docker_data/
+# # docker-compose -f /data/docker/docker_data/all_docker-compose.yml up -d
+# #
+# # echo "等待docker-compose 服务启动完成"
+#
+#
 
 
 
