@@ -533,15 +533,6 @@ config redirect
 config redirect
     option dest 'lan'
     option target 'DNAT'
-    option name 'webdav'
-    option src 'wan'
-    option src_dport '8101'
-    option dest_ip '192.168.10.1'
-    option dest_port '25544'
-
-config redirect
-    option dest 'lan'
-    option target 'DNAT'
     option name 'http_proxy'
     option src 'wan'
     option src_dport '8102'
@@ -554,7 +545,7 @@ config redirect
     option name 'docker_twonav'
     option src 'wan'
     option src_dport '8202'
-    option dest_ip '192.168.10.1'
+    option dest_ip '192.168.10.5'
     option dest_port '8202'
 
 config redirect
@@ -563,7 +554,7 @@ config redirect
     option name 'docker_flask_imgbin'
     option src 'wan'
     option src_dport '8204'
-    option dest_ip '192.168.10.1'
+    option dest_ip '192.168.10.5'
     option dest_port '8001'
 
 config redirect
@@ -572,7 +563,7 @@ config redirect
     option name 'docker_flask_webshell_c'
     option src 'wan'
     option src_dport '8214'
-    option dest_ip '192.168.10.1'
+    option dest_ip '192.168.10.5'
     option dest_port '8002'
 
 config redirect
@@ -581,7 +572,7 @@ config redirect
     option name 'docker_flask_webshell_b'
     option src 'wan'
     option src_dport '8224'
-    option dest_ip '192.168.10.1'
+    option dest_ip '192.168.10.5'
     option dest_port '8003'
 
 config redirect
@@ -590,7 +581,7 @@ config redirect
     option name 'docker_flask_novnc_1'
     option src 'wan'
     option src_dport '8234'
-    option dest_ip '192.168.10.1'
+    option dest_ip '192.168.10.5'
     option dest_port '8004'
 
 config redirect
@@ -599,7 +590,7 @@ config redirect
     option name 'docker_flask_novnc_2'
     option src 'wan'
     option src_dport '8244'
-    option dest_ip '192.168.10.1'
+    option dest_ip '192.168.10.5'
     option dest_port '8005'
 
 
@@ -1027,7 +1018,7 @@ result=`strInFile "ddns_update.sh" '/etc/crontabs/root'`
 if [ ${result} == 1 ]
 then
     echo "
-0  0 * * * /bin/sh /data/app/ddns/ddns_update.sh  >> /data/log/ddns_update.log &" >> /etc/crontabs/root
+*/10 * * * * /bin/sh  /data/app/ddns/ddns_update.sh  >> /data/log/ddns_update.log &" >> /etc/crontabs/root
 fi
 
 echo 'Crontab 添加 每小时释放内存;'
