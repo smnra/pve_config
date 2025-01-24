@@ -10,16 +10,16 @@ networks:
         gateway: "172.20.0.1"
 
 services:
-  ventoy:
-    image: thedrobe/iventoy-docker
-    container_name: "iventoy"
-    restart: no
-    privileged: true
-    stop_signal: SIGINT
-    volumes:
-      - /vol1/1000/tools/images:/app/iso
-      - /vol1/1000/docker_data/iventoy/data:/app/data
-    network_mode: "host"
+#   ventoy:
+#     image: thedrobe/iventoy-docker
+#     container_name: "iventoy"
+#     restart: no
+#     privileged: true
+#     stop_signal: SIGINT
+#     volumes:
+#       - /vol1/1000/tools/images:/app/iso
+#       - /vol1/1000/docker_data/iventoy/data:/app/data
+#     network_mode: "host"
 
   twonav:
     image: tznb/twonav:latest
@@ -34,25 +34,25 @@ services:
     ports:
       - 8202:80
 
-  mi-gpt:
-    image: idootop/mi-gpt:latest
-    container_name: "mi-gpt"
-    restart: always
-    networks:
-      docker_net:
-        ipv4_address: "172.20.0.3"
-    ports:
-      - 8203:3000
-    volumes:
-      - "/etc/localtime:/etc/localtime"
-      - "/vol1/1000/docker_data/mi-gpt/run.sh:/app/run.sh"
-      - "/vol1/1000/docker_data/mi-gpt/.migpt.js:/app/.migpt.js"
-      - "/vol1/1000/docker_data/mi-gpt/mi-gpt-tts-3.0.0:/app/mi-gpt-tts-3.0.0"
-      - "/vol1/1000/docker_data/mi-gpt/one-api:/app/one-api"
-    env_file:
-      - /vol1/1000/docker_data/mi-gpt/.env
-    command: sh -c "cd /app/ && sh /app/run.sh "
-
+#   mi-gpt:
+#     image: idootop/mi-gpt:latest
+#     container_name: "mi-gpt"
+#     restart: always
+#     networks:
+#       docker_net:
+#         ipv4_address: "172.20.0.3"
+#     ports:
+#       - 8203:3000
+#     volumes:
+#       - "/etc/localtime:/etc/localtime"
+#       - "/vol1/1000/docker_data/mi-gpt/run.sh:/app/run.sh"
+#       - "/vol1/1000/docker_data/mi-gpt/.migpt.js:/app/.migpt.js"
+#       - "/vol1/1000/docker_data/mi-gpt/mi-gpt-tts-3.0.0:/app/mi-gpt-tts-3.0.0"
+#       - "/vol1/1000/docker_data/mi-gpt/one-api:/app/one-api"
+#     env_file:
+#       - /vol1/1000/docker_data/mi-gpt/.env
+#     command: sh -c "cd /app/ && sh /app/run.sh "
+# 
 
   python_flask_docker:
     image: smnrao/python_flask_docker:latest
