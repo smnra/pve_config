@@ -658,25 +658,27 @@ config redirect
 echo "设置 wifi  /etc/config/wireless   ################################################################################"
 echo "
 config wifi-device 'radio0'
-    option type 'mac80211'
-    option path 'pci0000:00/0000:00:10.0'
-    option htmode 'VHT40'
-    option country 'US'
-    option mu_beamformer '1'
-    option cell_density '3'
-    option noscan '1'
-    option vendor_vht '1'
-    option band '5g'
-    option channel '40'
-    option txpower '27'
+	option type 'mac80211'
+	option path 'pci0000:00/0000:00:10.0'
+	option htmode 'VHT40'
+	option country 'CN'
+	option mu_beamformer '1'
+	option cell_density '3'
+	option noscan '1'
+	option vendor_vht '1'
+	option band '5g'
+	option channel '60'
+	option txpower '27'
 
 config wifi-iface 'wifinet0'
-    option device 'radio0'
-    option mode 'ap'
-    option ssid 'OpenWrt'
-    option encryption 'psk2'
-    option key 'smnra000'
-    option network 'lan'
+	option device 'radio0'
+	option mode 'ap'
+	option ssid 'OpenWrt'
+	option encryption 'psk2'
+	option key 'smnra000'
+	option network 'lan'
+
+
 " > /etc/config/wireless
 
 sleep 10
@@ -751,34 +753,8 @@ if [ ${result} == 1 ]
 then
     echo '开始修改 /etc/config/appfilter'
     echo "
-config global 'global'
-    option enable '1'
-    option work_mode '0'
 
-config appfilter 'appfilter'
-    option gameapps '2001 2002 2003 2015 2005 2006 2007 2008 2009 2010 2011 2012 2013 2014 2016 2017 2023 2025 2026 2033 2034 2041 2042 2040 2067 2068 2069 2070 2071 2072 2073 2074 2075 2050 2051 2080'
-    option videoapps '3001 3002 3003 3004 3005 3006 3008 3009 3010 3011 3012 3013 3014 3016 3017 3018 3019 3020 3021 3022 3023 3024 3025 3026 3027 3028 3029 3030'
-    option shoppingapps '4001 4002 4003 4004 4010 4011 4012 4021 4005 4006 4007 4008 4009 4013 4014 4015 4016 4017 4018 4019 4020 4023 4024 4025 4026'
-    option chatapps '1003 1004 1005 1006 1007 1008 1009 1010'
-    option musicapps '5001 5002 5003 5004 5005 5006 5007 5008 5009 5010 5011 5012'
-    option employeeapps '6001 6002 6003 6004 6005 6006 6007 6008 6009 6010 6011 6012 6013 6014'
-    option downloadapps '7001 7002 7003 7004 7005 7006 7007 7008 7009 7010 7011 7020 7030 7031 7032 7035'
-    option websiteapps '8001 8002 8003 8004 8005 8006 8007 8008 8009 8010 8011 8012 8013 8014 8015 8016 8017 8018 8019 8020 8021 8022 8023 8024 8025 8026 8027 8028 8029 8030 8031 8032 8033 8034 8035 8036 8037 8038 8039 8040 8041 8042 8043 8044 8046 8047 8048 8049 8050 8051 8052 8053 8054 8055 8056 8057 8058 8059 8060 8061 8062 8063 8064 8065 8066 8067 8068 8069 8070 8071 8072 8073 8074 8075 8076'
-
-config feature 'feature'
-    option update '0'
-    option format 'v2.0'
-
-config time 'time'
-    option time_mode '0'
-    option days '0 1 2 3 4 5 6'
-    option start_time '00:00'
-    option end_time '23:59'
-
-config user 'user'
-    option users '60:be:b4:00:f3:36'
-
-" > /etc/config/appfilter
+" >> /etc/config/appfilter
 else
     echo "已找到 option enable '1',未修改 /etc/config/appfilter"
 fi
@@ -1837,7 +1813,7 @@ if [ -f /etc/openclash/config/config.yaml ]; then
     echo "/etc/openclash/config/config.yaml openclash 配置文件已存在，跳过下载"
 else
     echo "下载 https://smnra.github.io/pve_config/openwrt/openclash/config.yaml 写入 /etc/openclash/config/config.yaml"
-    download_with_retry https://cdn.jsdmirror.com/gh/smnra/pve_config/openwrt/openclash/config.yaml /etc/openclash/config/config.yaml
+    download_with_retry https://smnra.github.io/pve_config/openwrt/openclash/config.yaml /etc/openclash/config/config.yaml
 fi
 
 # openclash 核心文件
