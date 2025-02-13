@@ -53,32 +53,64 @@ download_with_retry() {
 
 
 
-# ########################################################################################################################
-# echo "修改/dev/sda3挂载为 /data, 当前 分区挂载情况:   #######################################################################"
-# lsblk -o NAME,FSTYPE,UUID,MOUNTPOINT
-# mkdir -p /data
-#
-# result=`strInFile "option target '/data'" '/etc/config/fstab'`
-# if [ ${result} == 1 ]
-# then
-#     echo "修改 /etc/config/fstab 文件中的挂载点/mnt/sda3 为 /data"
-#     sed -i "s|option target '/mnt/sda3'|option target '/data'|"  "/etc/config/fstab"
-#
-#     # 启用挂载项（如果有需要）
-#     sed -i "s|option enabled '0'|option enabled '1'|" "/etc/config/fstab"
-#
-#     echo "卸载 umount /mnt/sda3"
-#     umount /mnt/sda3
-#
-#     echo "应用挂载点"
-#     block mount
-# else
-#     echo "已找到挂载点 /data : option target '/data' ,未修改 /etc/config/network"
-# fi
-#
-# echo "修改完成, 分区挂载情况:"
-# lsblk -o NAME,FSTYPE,UUID,MOUNTPOINT
-#
+########################################################################################################################
+echo "修改/dev/sda3挂载为 /data, 当前 分区挂载情况:   #######################################################################"
+lsblk -o NAME,FSTYPE,UUID,MOUNTPOINT
+
+uuid=$( lsblk -o NAME,UUID | grep sdb1 | awk '{print $2}')
+mkdir -p /data
+
+uuid_exist=`strInFile "${uuid}" '/etc/config/fstab'`  # 判断是否存在uuid
+mounter=`strInFile "option target '/data'" '/etc/config/fstab'`     # 判断是否存在挂载点
+
+if [ ${mounter} == 1 ] && [ ${uuid_exist} == 1 ] ; then
+    echo "不存在 "${uuid}"的/data 挂载点, 修改 /etc/config/fstab 文件中, 添加sdb1 的挂载为 /data"
+    echo "config mount
+       option target '/data'
+       option uuid '${uuid}'
+       option enabled '0'" >> /etc/config/fstab
+
+elif  [ ${mounter} == 0 ] && [ ${uuid_exist} == 1 ]; then
+    echo "存在 /data 挂载点, 但是 "${uuid}" 不对, 替换 /etc/config/fstab 文件中/data挂载点的uuid"
+    current_uuid=$(grep "option target '/data'" /etc/config/fstab -A 1 | grep "option uuid" | awk -F"'" '{print $2}')
+    sed -i "s|option uuid '${current_uuid}'|option uuid '${uuid}'|" /etc/config/fstab
+
+elif  [ ${mounter} == 1 ] && [ ${uuid_exist} == 0 ]; then
+    echo "存在 "${uuid}" 的挂载点, 但不是/data, 替换 /etc/config/fstab 文件中uuid的挂载点为/data"
+    current_mounter=$(grep -B1 "option uuid '${uuid}'" /etc/config/fstab | awk '/option target/ {print $3}'| sed "s|'||g")
+    echo "卸载 umount ${current_mounter}"
+    umount ${current_mounter}
+    sed -i "s|option target '${current_mounter}'|option target '/data'|" /etc/config/fstab
+
+elif  [ ${mounter} == 0 ] && [ ${uuid_exist} == 0 ]; then
+    echo "存在 "${uuid}" 的挂载点/data,无需修改/etc/config/fstab文件"
+fi
+
+
+umount /dev/sdb1
+mount /dev/sdb1 /data
+
+echo "应用挂载点"
+block mount
+
+echo "分区挂载修改完成, 分区挂载情况:"
+lsblk -o NAME,FSTYPE,UUID,MOUNTPOINT
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ########################################################################################################################
@@ -100,12 +132,13 @@ rm -rf /data/volumes
 
 
 ########################################################################################################################
-echo "创建目录 /data/temp, /data/log, /data/app/ddns, /data/docker/docker_home, /data/docker/docker_data  ###############"
+echo "创建目录 /data/temp, /data/log, /data/app/ddns, /data/docker_home, /data/docker_data  ###############"
 mkdir -p /data/temp
 mkdir -p /data/log
 mkdir -p /data/app/ddns
-# mkdir -p /data/docker/docker_home
-# mkdir -p /data/docker/docker_data
+mkdir -p /data/app/lucky
+mkdir -p /data/docker_home
+mkdir -p /data/docker_data
 
 
 
@@ -114,7 +147,6 @@ mkdir -p /data/app/ddns
 echo "下载安装 7zip 命令 7zz  到 /data/app/7zz   ##########################################################################"
 download_with_retry https://cdn.jsdmirror.com/gh/smnra/pve_config/openwrt/tools/7zip/7zz  /data/app/7zz
 echo "# 使用 cdn加速  fastly.jsdelivr.net 下载 https://smnra.github.io/pve_config/openwrt/tools/7zip/7zz
-
 
 https://fastly.jsdelivr.net/gh/smnra/pve_config/openwrt/tools/7zip/7zz
 https://cdn.jsdmirror.com/gh/smnra/pve_config/openwrt/openclash/tools/7zip/7zz  国内速度快
@@ -135,42 +167,46 @@ echo "安装软件包 ##########################################################
 echo 'opkg update'
 opkg update
 
+# iw-full kmod-mt7921e hostapd-openssl luci-app-openvpn-server luci-app-ddns luci-app-wechatpush luci-app-oaf luci-app-partexp
+# lucky luci-app-lucky luci-app-my-dnshelper luci-app-zerotier tvhelper qemu-ga vlmcsd luci-app-vlmcsd
+
+
 # echo '无线网卡 mt7921e 软件包安装.'
 # opkg install iw-full kmod-mt7921e hostapd-openssl
 
-# echo '安装zerotier软件包'
-# opkg install luci-app-zerotier
-#
-# echo '安装局域网唤醒.'
-# opkg install wol etherwake luci-app-wol luci-i18n-wol-zh-cn
-#
-# echo '安装docker-compose软件包'
-# opkg install docker-compose
-#
-# echo '安装tv助手软件包'
-# opkg install tvhelper
-#
-# echo '安装kms软件包'
-# opkg install vlmcsd luci-app-vlmcsd
-#
-# echo '安装统一文件共享  支持webdav协议'
-# opkg install luci-app-unishare
-#
-# echo '安装微信推送软件包'
-# opkg install luci-app-wechatpush
-#
-# echo '安装 zoneinfo 软件包 解决 dockers 时间问题.  /etc/localtime:/etc/localtime  映射报错'
-# opkg install zoneinfo
-#
-# echo '安装 luci-app-my-dnshelper DNS管理与去广告'
-# opkg install luci-app-my-dnshelper
-#
-# echo '安装 ddns 软件包'
-# opkg install luci-app-ddns
-#
 # echo '安装 openvpn 服务器软件包'
 # opkg install luci-app-openvpn-server
-#
+
+
+# echo '安装 ddns 软件包'
+# opkg install luci-app-ddns
+
+# echo '安装微信推送软件包'
+# opkg install luci-app-wechatpush
+
+
+
+echo '安装zerotier软件包'
+opkg install luci-app-zerotier
+
+echo '安装 lucky'
+opkg install lucky luci-app-lucky
+
+echo '安装局域网唤醒.'
+opkg install wol etherwake luci-app-wol luci-i18n-wol-zh-cn
+
+echo '安装docker-compose软件包 安装 zoneinfo 软件包 解决 dockers 时间问题.  /etc/localtime:/etc/localtime  映射报错'
+opkg install docker-compose zoneinfo
+
+echo '安装tv助手软件包'
+opkg install tvhelper
+
+echo '安装kms软件包'
+opkg install vlmcsd luci-app-vlmcsd
+
+
+
+
 
 ########################################################################################################################
 echo '设置中文语言'
@@ -183,6 +219,11 @@ uci commit luci
 
 ########################################################################################################################
 echo "设置 web访问 nginx访问控制列表        ################################################################################"
+is_nginx=`strInFile 'allow' '/etc/nginx/restrict_locally'`
+is_uhttpd=`strInFile 'allow' '/etc/config/uhttpd'`
+echo result: ${is_nginx}
+if [ ${is_nginx} == 1 ]; then
+echo '已找到 /etc/nginx/restrict_locally, 为nginx 提供http 服务,修改 nginx访问控制列表 '
 echo "
     allow all;
     allow 123.138.78.0/24;
@@ -199,6 +240,10 @@ echo "
     deny all;
 " > /etc/nginx/restrict_locally
 
+elif [ ${is_uhttpd} == 1 ]; then
+    echo '已找到 /etc/nginx/restrict_locally, 为nginx 提供http 服务,修改 nginx访问控制列表 '
+    echo '已找到/etc/config/uhttpd 为 uhttpd 提供http 服务,本次不做修改'
+fi
 
 
 
@@ -448,6 +493,15 @@ config redirect
 config redirect
     option dest 'lan'
     option target 'DNAT'
+    option name 'openwrt_lucky'
+    option src 'wan'
+    option src_dport '8011'
+    option dest_ip '192.168.10.1'
+    option dest_port '10661'
+
+config redirect
+    option dest 'lan'
+    option target 'DNAT'
     option name 'openwrt_ssh'
     option src 'wan'
     option src_dport '9001'
@@ -577,7 +631,7 @@ config redirect
     option name 'docker_twonav'
     option src 'wan'
     option src_dport '8202'
-    option dest_ip '192.168.10.5'
+    option dest_ip '192.168.10.1'
     option dest_port '8202'
 
 config redirect
@@ -586,7 +640,7 @@ config redirect
     option name 'docker_flask_imgbin'
     option src 'wan'
     option src_dport '8204'
-    option dest_ip '192.168.10.5'
+    option dest_ip '192.168.10.1'
     option dest_port '8204'
 
 config redirect
@@ -595,7 +649,7 @@ config redirect
     option name 'docker_flask_webshell_c'
     option src 'wan'
     option src_dport '8214'
-    option dest_ip '192.168.10.5'
+    option dest_ip '192.168.10.1'
     option dest_port '8214'
 
 config redirect
@@ -604,7 +658,7 @@ config redirect
     option name 'docker_flask_webshell_b'
     option src 'wan'
     option src_dport '8224'
-    option dest_ip '192.168.10.5'
+    option dest_ip '192.168.10.1'
     option dest_port '8224'
 
 config redirect
@@ -613,7 +667,7 @@ config redirect
     option name 'docker_flask_novnc_1'
     option src 'wan'
     option src_dport '8234'
-    option dest_ip '192.168.10.5'
+    option dest_ip '192.168.10.1'
     option dest_port '8234'
 
 config redirect
@@ -622,7 +676,7 @@ config redirect
     option name 'docker_flask_novnc_2'
     option src 'wan'
     option src_dport '8244'
-    option dest_ip '192.168.10.5'
+    option dest_ip '192.168.10.1'
     option dest_port '8244'
 
 config redirect
@@ -640,9 +694,17 @@ config redirect
     option name 'aipan'
     option src 'wan'
     option src_dport '8206'
-    option dest_ip '192.168.10.5'
+    option dest_ip '192.168.10.1'
     option dest_port '8206'
 
+config redirect
+    option dest 'lan'
+    option target 'DNAT'
+    option name 'homeassistant'
+    option src 'wan'
+    option src_dport '8207'
+    option dest_ip '192.168.10.1'
+    option dest_port '8123'
 " >> /etc/config/firewall
 
 
@@ -753,16 +815,219 @@ if [ ${result} == 1 ]
 then
     echo '开始修改 /etc/config/appfilter'
     echo "
+config global 'global'
+        option enable '1'
+        option work_mode '0'
+        option record_enable '1'
+        option disable_hnat '1'
+        option tcp_rst '1'
+        option lan_ifname 'br-lan'
 
+config appfilter 'appfilter'
+
+config feature 'feature'
+        option update '0'
+        option format 'v3.0'
+
+config time 'time'
+        option deny_time '60'
+        option start_time '00:00'
+        option end_time '23:00'
+        option allow_time '20'
+        option time_mode '0'
+        option days '1 2 3 4 5 6 0'
+        list time '00:00-23:59'
+
+config user 'user'
+
+config rule 'rule'
+        list app_list '1003'
+        list app_list '1004'
+        list app_list '1005'
+        list app_list '1006'
+        list app_list '1007'
+        list app_list '1008'
+        list app_list '1009'
+        list app_list '1010'
+        list app_list '2001'
+        list app_list '2003'
+        list app_list '2015'
+        list app_list '2009'
+        list app_list '2010'
+        list app_list '2017'
+        list app_list '2023'
+        list app_list '3001'
+        list app_list '3004'
+        list app_list '3008'
+        list app_list '3016'
+        list app_list '3017'
+        list app_list '3018'
+        list app_list '3020'
+        list app_list '4001'
+        list app_list '4002'
+        list app_list '4003'
+        list app_list '4004'
+        list app_list '4010'
+        list app_list '4012'
+        list app_list '4021'
+        list app_list '4005'
+        list app_list '4006'
+        list app_list '4007'
+        list app_list '4008'
+        list app_list '5001'
+        list app_list '5002'
+        list app_list '5003'
+        list app_list '5004'
+        list app_list '5005'
+        list app_list '5006'
+        list app_list '5007'
+        list app_list '6001'
+        list app_list '6002'
+        list app_list '6003'
+        list app_list '6004'
+        list app_list '6008'
+        list app_list '6009'
+        list app_list '6010'
+        list app_list '7002'
+        list app_list '7004'
+        list app_list '7005'
+        list app_list '7006'
+        list app_list '7007'
+        list app_list '7008'
+        list app_list '7009'
+        list app_list '7010'
+        list app_list '7011'
+        list app_list '7020'
+        list app_list '7030'
+        list app_list '7031'
+        list app_list '7032'
+        list app_list '8001'
+        list app_list '8079'
+        list app_list '8002'
+        list app_list '8003'
+        list app_list '8004'
+        list app_list '8005'
+        list app_list '8009'
+        list app_list '8010'
+        list app_list '8006'
+        list app_list '8020'
+        list app_list '8026'
+        list app_list '8027'
+        list app_list '8029'
+        list app_list '8030'
+        list app_list '8031'
+        list app_list '8035'
+        list app_list '8036'
+        list app_list '8037'
+        list app_list '8038'
+        list app_list '8039'
+        list app_list '8041'
+        list app_list '8044'
+        list app_list '8046'
+        list app_list '8064'
+        list app_list '8065'
+        list app_list '8066'
+        list app_list '8077'
+        list app_list '8087'
+        list app_list '8089'
+        list app_list '8090'
+        list app_list '8092'
+        list app_list '8093'
+        list app_list '8094'
+        list app_list '8096'
+        list app_list '8098'
+        list app_list '8099'
+        list app_list '8100'
+        list app_list '8103'
+        list app_list '8104'
+        list app_list '8105'
+        list app_list '8106'
+        list app_list '8107'
+        list app_list '8108'
+        list app_list '8110'
+        list app_list '8111'
+        list app_list '8112'
+        list app_list '10003'
+        list app_list '10034'
+        list app_list '10035'
+        list app_list '10004'
+        list app_list '10005'
+        list app_list '10006'
+        list app_list '10007'
+        list app_list '10008'
+        list app_list '10010'
+        list app_list '10011'
+        list app_list '10012'
+        list app_list '10013'
+        list app_list '10014'
+        list app_list '10015'
+        list app_list '10016'
+        list app_list '10017'
+        list app_list '10018'
+        list app_list '10019'
+        list app_list '10020'
+        list app_list '10022'
+        list app_list '14001'
+        list app_list '14002'
+        list app_list '14003'
+        list app_list '14004'
+        list app_list '14005'
+        list app_list '14006'
+        list app_list '14007'
+        list app_list '14008'
+        list app_list '14009'
+        list app_list '14010'
+        list app_list '14011'
+        list app_list '14012'
+        list app_list '14013'
+        list app_list '14014'
 " >> /etc/config/appfilter
 else
     echo "已找到 option enable '1',未修改 /etc/config/appfilter"
 fi
 
-echo "启动 appfilter"
-/etc/init.d/appfilter restart
+########################################################################################################################
+
+
+
+
 
 ########################################################################################################################
+echo '配置 lucky ######################################################################################################'
+
+if [ -f /etc/config/lucky ]; then
+    echo '开始修改 /etc/config/appfilter'
+    echo "
+    config lucky 'lucky'
+        option logger '1'
+        option port '16601'
+        option configdir '/etc/lucky'
+        option enabled '1'
+        option safe 'smnra'
+" > /etc/config/lucky
+else
+    echo "未找到 lucky 配置文件 /etc/config/lucky"
+fi
+
+
+if [ -f /etc/lucky ]; then
+    if [ -f /data/app/lucky/lucky.tar.gz ]; then
+        echo 'lucky配置文件已存在，无需下载'
+    else
+        echo '开始下载lucky配置文件到/etc/lucky'
+        download_with_retry https://cdn.jsdmirror.com/gh/smnra/pve_config/openwrt/lucky/lucky.tar.gz /data/app/lucky/lucky.tar.gz
+    fi
+    echo '开始解压lucky配置文件 /etc/lucky/'
+    tar -zxvf /data/app/lucky/lucky.tar.gz -C /data/app/lucky/
+    cp -rf /data/app/lucky/lucky/* /etc/lucky/
+else
+    echo "未找到 lucky 配置文件 /etc/lucky目录"
+fi
+
+
+########################################################################################################################
+
+
 
 
 
@@ -2151,13 +2416,6 @@ config authentication
 
 config config_subscribe
 	option enabled '1'
-	option name 'ikuajingbus.com'
-	option address 'https://ikuajingbus.com/link/ArcZmtWl7YaZxyrN?sub=3'
-	option sub_ua 'clash.meta'
-	option sub_convert '0'
-
-config config_subscribe
-	option enabled '1'
 	option name 'yudoucode'
 	option address 'https://smnra.github.io/yudoucode/v2ray/index.html'
 	option sub_ua 'clash.meta'
@@ -2188,63 +2446,45 @@ echo "重启 openclash "
 
 
 
-# ########################################################################################################################
-# # /etc/config/dockerd
-# echo "配置docker.     ###################################################################################################"
-# uci set dockerd.globals.data_root='/data/docker/docker_home'
-# uci add_list dockerd.globals.registry_mirrors="https://docker.hpcloud.cloud"
-# uci add_list dockerd.globals.registry_mirrors="https://docker.m.daocloud.io"
-# uci add_list dockerd.globals.registry_mirrors="https://docker.unsee.tech"
-# uci add_list dockerd.globals.registry_mirrors="https://docker.1panel.live"
-# uci add_list dockerd.globals.registry_mirrors="http://mirrors.ustc.edu.cn"
-# uci add_list dockerd.globals.registry_mirrors="https://docker.chenby.cn"
-# uci add_list dockerd.globals.registry_mirrors="http://mirror.azure.cn"
-# uci add_list dockerd.globals.registry_mirrors="https://dockerpull.org"
-# uci add_list dockerd.globals.registry_mirrors="https://dockerhub.icu"
-# uci add_list dockerd.globals.registry_mirrors="https://hub.rat.dev"
-# uci add_list dockerd.globals.registry_mirrors="https://proxy.1panel.live"
-# uci add_list dockerd.globals.registry_mirrors="https://docker.1panel.top"
-# uci add_list dockerd.globals.registry_mirrors="https://docker.m.daocloud.io"
-# uci add_list dockerd.globals.registry_mirrors="https://docker.1ms.run"
-# uci add_list dockerd.globals.registry_mirrors="https://docker.ketches.cn"
-#
-# # uci set dockerd.globals.bip='172.20.0.1/16'
-# uci commit dockerd
-#
-# /etc/init.d/dockerd restart
-#
-#
+########################################################################################################################
+# /etc/config/dockerd
+echo "配置docker.     ###################################################################################################"
+uci set dockerd.globals.data_root='/data/docker_home'
+uci add_list dockerd.globals.registry_mirrors="https://docker.m.daocloud.io"
+uci add_list dockerd.globals.registry_mirrors="https://docker.1ms.run"
+
+uci commit dockerd
+
+/etc/init.d/dockerd restart
+
+# tar -zcvf docker_data_2025-02-13_113045.tar.gz  --gzip --level=9 docker_data  备份 docker_data
 # echo "下载docker_data 数据包并解压"
-# wget -c -O /data/docker/docker_data.7z  https://cdn.jsdmirror.com/gh/smnra/pve_config/docker/docker_data.7z
+# wget -c -O /data/docker_data.7z  https://cdn.jsdmirror.com/gh/smnra/pve_config/docker/docker_data.7z
 # cd /data/docker/
-# 7zz x -psmnra000 /data/docker/docker_data.7z -o/data/app/
-# mv /data/docker/all_docker-compose.yml /data/docker/docker_data/all_docker-compose.yml
+# 7zz x -psmnra000 /data/docker_data.7z -o/data/docker_data
 # rm -f  /data/docker/docker_data.7z
 
 
-# echo "下载docker-compose 配置文件"
-# wget -c -O /data/docker/docker_data/all_docker-compose.yml  https://cdn.jsdmirror.com/gh/smnra/pve_config/docker/all_docker-compose.yml
-#
-# echo "docker 镜像下载"
-# docker pull tznb/twonav:latest
-# docker pull idootop/mi-gpt:latest
-# docker pull smnrao/python_flask_docker:latest
-# docker pull thedrobe/iventoy-docker:latest
+echo "下载docker-compose 配置文件"
+if [ -f /data/docker_data/docker-compose.yml ]; then
+    echo "/data/docker_data/docker-compose.yml docker-compose配置文件已存在，跳过下载"
+else
+    echo "下载 https://smnra.github.io/pve_config/openwrt/openclash/config.yml 写入 /etc/openclash/config/config.yml"
+    download_with_retry https://smnra.github.io/pve_config/docker/all_docker-compose.yml /data/docker_data/docker-compose.yml
+fi
 
 
-# echo "启动docker-compose 服务"
-# cd  /data/docker/docker_data/
-# docker-compose -f /data/docker/docker_data/all_docker-compose.yml up -d
-#
-# echo "等待docker-compose 服务启动完成"
+echo "docker 镜像下载"
+docker pull tznb/twonav:latest
+docker pull smnrao/python_flask_docker:latest
+docker pull fooololo/aipan-netdisk-search:latest
+docker pull homeassistant/home-assistant:latest
 
 
-
-
-
-
-
-
+echo "启动docker-compose 服务"
+cd  /data/docker_data/
+docker-compose -f /data/docker/docker_data/docker-compose.yml up -d
+echo "等待docker-compose 服务启动完成"
 
 
 

@@ -1,0 +1,138 @@
+
+# 备份数据目录:　tar -zcvf all_docker_data.tar.gz airprint alist clouddrive iventoy lucky next-terminal openvpn-as twonav postgresql wordpress all_docker-compose.yml
+
+networks:
+  docker_net:
+    driver: bridge
+    ipam:
+      config:
+      - subnet: "172.20.0.0/16"
+        gateway: "172.20.0.1"
+
+services:
+#  iventoy:
+#    image: thedrobe/iventoy-docker
+#    container_name: "iventoy"
+#    restart: no
+#    privileged: true
+#    stop_signal: SIGINT
+#    volumes:
+#      - /vol1/1000/tools/images:/app/iso
+#      - /data/docker_data/iventoy/data:/app/data
+#    network_mode: "host"
+
+  twonav:
+    image: tznb/twonav:latest
+    container_name: "twonav"
+    volumes:
+      - '/data/docker_data/twonav/www:/www'
+    restart: unless-stopped
+    user: 0:0
+    networks:
+      docker_net:
+        ipv4_address: "172.20.0.2"
+    ports:
+      - 8202:80
+
+#  mi-gpt:
+#    image: idootop/mi-gpt:latest
+#    container_name: "mi-gpt"
+#    restart: always
+#    networks:
+#      docker_net:
+#        ipv4_address: "172.20.0.3"
+#    ports:
+#      - 8203:3000
+#    volumes:
+#      - "/etc/localtime:/etc/localtime"
+#      - "/data/docker_data/mi-gpt/run.sh:/app/run.sh"
+#      - "/data/docker_data/mi-gpt/.migpt.js:/app/.migpt.js"
+#      - "/data/docker_data/mi-gpt/mi-gpt-tts-3.0.0:/app/mi-gpt-tts-3.0.0"
+#      - "/data/docker_data/mi-gpt/one-api:/app/one-api"
+#    env_file:
+#      - /data/docker_data/mi-gpt/.env
+#    command: sh -c "cd /app/ && sh /app/run.sh "
+
+
+  python_flask_docker:
+    image: smnrao/python_flask_docker:latest
+    container_name: "python_flask_docker"
+    restart: always
+    networks:
+      docker_net:
+        ipv4_address: "172.20.0.4"
+    ports:
+      - "8204:8001"
+      - "8214:8002"
+      - "8224:8003"
+      - "8234:8004"
+      - "8244:8005"
+    volumes:
+      - "/data/docker_data/python_flask_docker/app:/app"
+
+#  xunlei:
+#    image: registry.fnnas.com/fnapp/cnk3x_xunlei:latest
+#    container_name: xunlei
+#    restart: unless-stopped
+#    privileged: true
+#    environment:
+#      XL_DASHBOARD_USERNAME: 'smnra'
+#      XL_DASHBOARD_PASSWORD: 'smnra000'
+#    networks:
+#      docker_net:
+#        ipv4_address: "172.20.0.5"
+#    ports:
+#      - "8205:2345"
+#    volumes:
+#      - /vol1/docker_data/xunlei/data:/xunlei/data
+#      - /vol1/1000/movice:/xunlei/data/movice
+#      - /vol1/1000/downloads/xunlei_download:/xunlei/downloads
+#      - /vol1/1000/downloads:/xunlei/downloads2
+
+  aipan:
+    image: fooololo/aipan-netdisk-search:latest
+    container_name: aipan
+    restart: unless-stopped
+    networks:
+      docker_net:
+        ipv4_address: "172.20.0.6"
+    ports:
+      - "8206:3000"
+    logging:
+     options:
+       max-size: "5m"
+       max-file: "5"
+
+
+#  airprint:
+#    image: anujdatar/cups
+#    container_name: airprint
+#    restart: always
+#    networks:
+#      docker_net:
+#        ipv4_address: "172.20.0.6"
+#    ports:
+#      - 8206:631
+#    devices:
+#      - /dev/bus/usb:/dev/bus/usb
+#    environment:
+#      - CUPSADMIN=smnra
+#      - CUPSPASSWORD=smnra000
+#      - TZ="America/Gotham"
+#    volumes:
+#      - /data/docker_data/airprint/cups:/etc/cups
+#      - /data/docker_data/airprint/var/cache/cups:/var/cache/cups
+#      - /data/docker_data/airprint/var/log/cups:/var/log/cups
+#      - /data/docker_data/airprint/var/spool/cups:/var/spool/cups
+#
+
+
+  homeassistant:
+    image: homeassistant/home-assistant:latest
+    container_name: homeassistant
+    volumes:
+      - /data/docker_data/homeassistant/config:/config
+    ports:
+      - "8123:8123"
+    restart: always
+    network_mode: host
