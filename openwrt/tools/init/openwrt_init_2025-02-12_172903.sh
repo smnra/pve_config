@@ -2457,12 +2457,18 @@ uci commit dockerd
 
 /etc/init.d/dockerd restart
 
+
+
 # tar -zcvf docker_data_2025-02-13_113045.tar.gz  --gzip --level=9 docker_data  备份 docker_data
-# echo "下载docker_data 数据包并解压"
-# wget -c -O /data/docker_data.7z  https://cdn.jsdmirror.com/gh/smnra/pve_config/docker/docker_data.7z
-# cd /data/docker/
-# 7zz x -psmnra000 /data/docker_data.7z -o/data/docker_data
-# rm -f  /data/docker/docker_data.7z
+echo "下载docker_data.tar.gz 数据包并解压"
+if [ -f /data/docker_data.tar.gz ]; then
+    echo "/data/docker_data.tar.gz已存在，跳过下载"
+else
+    echo "下载 docker_data.tar.gz 数据包并解压"
+    download_with_retry https://cdn.jsdmirror.com/gh/smnra/pve_config/docker/docker_data_2025-02-13_113045.tar.gz /data/docker_data.tar.gz
+    cd /data
+    tar -zxvf docker_data.tar.gz
+fi
 
 
 echo "下载docker-compose 配置文件"
