@@ -208,9 +208,6 @@ echo '安装kms软件包'
 opkg install vlmcsd luci-app-vlmcsd
 
 
-
-
-
 ########################################################################################################################
 echo '设置中文语言'
 uci set luci.main.lang='zh_cn'
@@ -672,12 +669,12 @@ echo "启动 wechatpush"
 echo '\n配置 lucky ######################################################################################################'
 
 if [ -f /etc/config/lucky ]; then
-    echo '开始修改 /etc/config/appfilter'
+    echo '开始修改 /etc/config/lucky'
     echo "
     config lucky 'lucky'
         option logger '1'
         option port '16601'
-        option configdir '/data/app/lucky/lucky'
+        option configdir '/etc/lucky'
         option enabled '1'
         option safe 'smnra'
 " > /etc/config/lucky
@@ -687,22 +684,33 @@ fi
 
 
 if [ -f /etc/lucky ]; then
-    if [ -f /data/app/lucky/lucky.tar.gz ]; then
+    if [ -f /data/app/lucky/lucky_Linux_x86_64.tar.gz ]; then
+        echo 'lucky软件包更新文件已存在，无需下载'
+    else
+        echo '开始下载lucky软件包更新文件到/data/app/lucky/lucky_Linux_x86_64.tar.gz'
+        download_with_retry https://6.66666.host:66/files/2.15.3/lucky_2.15.3_Linux_x86_64.tar.gz /data/app/lucky/lucky_Linux_x86_64.tar.gz
+    fi
+    tar -zxvf /data/app/lucky/lucky_Linux_x86_64.tar.gz lucky -C /data/app/lucky/lucky/
+    chmod +x /data/app/lucky/lucky/lucky
+    cp /data/app/lucky/lucky/lucky /usr/bin/lucky
+    rm -rf /data/app/lucky/lucky/lucky
+
+    if [ -f /data/app/lucky/lucky_config.zip ]; then
         echo 'lucky配置文件已存在，无需下载'
     else
         echo '开始下载lucky配置文件到/etc/lucky'
-        download_with_retry https://smnra.github.io/pve_config/openwrt/lucky/lucky.tar.gz /data/app/lucky/lucky.tar.gz
+        download_with_retry https://smnra.github.io/pve_config/openwrt/lucky/lucky_config.zip /data/app/lucky/lucky_config.zip
     fi
     echo '开始解压lucky配置文件 /etc/lucky/'
-    tar -zxvf /data/app/lucky/lucky.tar.gz -C /data/app/lucky/
+    unzip /data/app/lucky/lucky_config.zip -d /data/app/lucky/lucky/
     cp -rf /data/app/lucky/lucky/* /etc/lucky/
 else
     echo "未找到 lucky 配置文件 /etc/lucky目录"
 fi
 
-
+echo "启动 lucky"
+/etc/init.d/lucky start
 ########################################################################################################################
-
 
 
 
@@ -736,7 +744,7 @@ config zerotier 'sample_config'
 echo '\nDNS助手配置  /etc/config/my-dnshelper   ############################################################################'
 echo "
 config my-dnshelper
-    option enable '0'
+    option enable '1'
     option autoupdate '1'
     option flash '1'
     option use_doh '0'
