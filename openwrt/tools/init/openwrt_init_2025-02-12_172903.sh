@@ -802,196 +802,6 @@ echo "启动 wechatpush"
 
 
 
-
-
-
-
-
-
-########################################################################################################################
-echo '配置 应用过滤 ######################################################################################################'
-result=`strInFile "option enable '1'" '/etc/config/appfilter'`
-if [ ${result} == 1 ]
-then
-    echo '开始修改 /etc/config/appfilter'
-    echo "
-config global 'global'
-        option enable '1'
-        option work_mode '0'
-        option record_enable '1'
-        option disable_hnat '1'
-        option tcp_rst '1'
-        option lan_ifname 'br-lan'
-
-config appfilter 'appfilter'
-
-config feature 'feature'
-        option update '0'
-        option format 'v3.0'
-
-config time 'time'
-        option deny_time '60'
-        option start_time '00:00'
-        option end_time '23:00'
-        option allow_time '20'
-        option time_mode '0'
-        option days '1 2 3 4 5 6 0'
-        list time '00:00-23:59'
-
-config user 'user'
-
-config rule 'rule'
-        list app_list '1003'
-        list app_list '1004'
-        list app_list '1005'
-        list app_list '1006'
-        list app_list '1007'
-        list app_list '1008'
-        list app_list '1009'
-        list app_list '1010'
-        list app_list '2001'
-        list app_list '2003'
-        list app_list '2015'
-        list app_list '2009'
-        list app_list '2010'
-        list app_list '2017'
-        list app_list '2023'
-        list app_list '3001'
-        list app_list '3004'
-        list app_list '3008'
-        list app_list '3016'
-        list app_list '3017'
-        list app_list '3018'
-        list app_list '3020'
-        list app_list '4001'
-        list app_list '4002'
-        list app_list '4003'
-        list app_list '4004'
-        list app_list '4010'
-        list app_list '4012'
-        list app_list '4021'
-        list app_list '4005'
-        list app_list '4006'
-        list app_list '4007'
-        list app_list '4008'
-        list app_list '5001'
-        list app_list '5002'
-        list app_list '5003'
-        list app_list '5004'
-        list app_list '5005'
-        list app_list '5006'
-        list app_list '5007'
-        list app_list '6001'
-        list app_list '6002'
-        list app_list '6003'
-        list app_list '6004'
-        list app_list '6008'
-        list app_list '6009'
-        list app_list '6010'
-        list app_list '7002'
-        list app_list '7004'
-        list app_list '7005'
-        list app_list '7006'
-        list app_list '7007'
-        list app_list '7008'
-        list app_list '7009'
-        list app_list '7010'
-        list app_list '7011'
-        list app_list '7020'
-        list app_list '7030'
-        list app_list '7031'
-        list app_list '7032'
-        list app_list '8001'
-        list app_list '8079'
-        list app_list '8002'
-        list app_list '8003'
-        list app_list '8004'
-        list app_list '8005'
-        list app_list '8009'
-        list app_list '8010'
-        list app_list '8006'
-        list app_list '8020'
-        list app_list '8026'
-        list app_list '8027'
-        list app_list '8029'
-        list app_list '8030'
-        list app_list '8031'
-        list app_list '8035'
-        list app_list '8036'
-        list app_list '8037'
-        list app_list '8038'
-        list app_list '8039'
-        list app_list '8041'
-        list app_list '8044'
-        list app_list '8046'
-        list app_list '8064'
-        list app_list '8065'
-        list app_list '8066'
-        list app_list '8077'
-        list app_list '8087'
-        list app_list '8089'
-        list app_list '8090'
-        list app_list '8092'
-        list app_list '8093'
-        list app_list '8094'
-        list app_list '8096'
-        list app_list '8098'
-        list app_list '8099'
-        list app_list '8100'
-        list app_list '8103'
-        list app_list '8104'
-        list app_list '8105'
-        list app_list '8106'
-        list app_list '8107'
-        list app_list '8108'
-        list app_list '8110'
-        list app_list '8111'
-        list app_list '8112'
-        list app_list '10003'
-        list app_list '10034'
-        list app_list '10035'
-        list app_list '10004'
-        list app_list '10005'
-        list app_list '10006'
-        list app_list '10007'
-        list app_list '10008'
-        list app_list '10010'
-        list app_list '10011'
-        list app_list '10012'
-        list app_list '10013'
-        list app_list '10014'
-        list app_list '10015'
-        list app_list '10016'
-        list app_list '10017'
-        list app_list '10018'
-        list app_list '10019'
-        list app_list '10020'
-        list app_list '10022'
-        list app_list '14001'
-        list app_list '14002'
-        list app_list '14003'
-        list app_list '14004'
-        list app_list '14005'
-        list app_list '14006'
-        list app_list '14007'
-        list app_list '14008'
-        list app_list '14009'
-        list app_list '14010'
-        list app_list '14011'
-        list app_list '14012'
-        list app_list '14013'
-        list app_list '14014'
-" >> /etc/config/appfilter
-else
-    echo "已找到 option enable '1',未修改 /etc/config/appfilter"
-fi
-
-########################################################################################################################
-
-
-
-
-
 ########################################################################################################################
 echo '配置 lucky ######################################################################################################'
 
@@ -1001,7 +811,7 @@ if [ -f /etc/config/lucky ]; then
     config lucky 'lucky'
         option logger '1'
         option port '16601'
-        option configdir '/etc/lucky'
+        option configdir '/data/app/lucky/lucky'
         option enabled '1'
         option safe 'smnra'
 " > /etc/config/lucky
@@ -1015,7 +825,7 @@ if [ -f /etc/lucky ]; then
         echo 'lucky配置文件已存在，无需下载'
     else
         echo '开始下载lucky配置文件到/etc/lucky'
-        download_with_retry https://cdn.jsdmirror.com/gh/smnra/pve_config/openwrt/lucky/lucky.tar.gz /data/app/lucky/lucky.tar.gz
+        download_with_retry https://smnra.github.io/pve_config/openwrt/lucky/lucky.tar.gz /data/app/lucky/lucky.tar.gz
     fi
     echo '开始解压lucky配置文件 /etc/lucky/'
     tar -zxvf /data/app/lucky/lucky.tar.gz -C /data/app/lucky/
@@ -2480,12 +2290,12 @@ else
 fi
 
 
-echo "docker 镜像下载"
-docker pull tznb/twonav:latest
-docker pull smnrao/python_flask_docker:latest
-docker pull fooololo/aipan-netdisk-search:latest
-docker pull homeassistant/home-assistant:latest
-
+# echo "docker 镜像下载"
+# docker pull tznb/twonav:latest
+# docker pull smnrao/python_flask_docker:latest
+# docker pull fooololo/aipan-netdisk-search:latest
+# docker pull homeassistant/home-assistant:latest
+#
 
 echo "启动docker-compose 服务"
 cd  /data/docker_data/

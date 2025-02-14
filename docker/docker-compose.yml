@@ -91,7 +91,7 @@ services:
     container_name: homeassistant
     volumes:
       - /data/docker_data/homeassistant/config:/config
-    ports:
-      - "8123:8123"
+#    ports:
+#      - "8123:8123"
     restart: always
     network_mode: host
