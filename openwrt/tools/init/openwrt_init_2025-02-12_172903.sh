@@ -186,20 +186,23 @@ opkg update
 
 
 
-echo '安装zerotier软件包'
-opkg install luci-app-zerotier
+# echo '安装zerotier软件包'
+# opkg install luci-app-zerotier
 
-echo '安装 lucky'
-opkg install lucky luci-app-lucky
+# echo '安装 lucky'
+# opkg install lucky luci-app-lucky
+
+# echo '安装tv助手软件包'
+# opkg install tvhelper
+
+# echo '安装qemu-ga'
+# opkg install qemu-ga
 
 echo '安装局域网唤醒.'
 opkg install wol etherwake luci-app-wol luci-i18n-wol-zh-cn
 
 echo '安装docker-compose软件包 安装 zoneinfo 软件包 解决 dockers 时间问题.  /etc/localtime:/etc/localtime  映射报错'
 opkg install docker-compose zoneinfo
-
-echo '安装tv助手软件包'
-opkg install tvhelper
 
 echo '安装kms软件包'
 opkg install vlmcsd luci-app-vlmcsd
@@ -481,23 +484,6 @@ uci commit dhcp
 ########################################################################################################################
 echo '防火墙规则 80** 端口为 lan 网段映射  81** 为openwrt内部端口的映射   82** 为docker端口的映射  最后一位为 ip地址尾数 ############'
 echo "
-config redirect
-    option dest 'lan'
-    option target 'DNAT'
-    option name 'openwrt_web'
-    option src 'wan'
-    option src_dport '8001'
-    option dest_ip '192.168.10.1'
-    option dest_port '443'
-
-config redirect
-    option dest 'lan'
-    option target 'DNAT'
-    option name 'openwrt_lucky'
-    option src 'wan'
-    option src_dport '8011'
-    option dest_ip '192.168.10.1'
-    option dest_port '10661'
 
 config redirect
     option dest 'lan'
@@ -512,28 +498,10 @@ config redirect
     option target 'DNAT'
     option src 'wan'
     option dest_ip '192.168.10.2'
-    option name 'pve_web'
-    option src_dport '8002'
-    option dest_port '8006'
-  list proto 'tcp'
-
-config redirect
-    option target 'DNAT'
-    option src 'wan'
-    option dest_ip '192.168.10.2'
     option name 'pve_ssh'
     option src_dport '9002'
     option dest_port '22'
   list proto 'tcp'
-
-config redirect
-    option dest 'lan'
-    option target 'DNAT'
-    option name 'pve-Win10_web'
-    option src 'wan'
-    option src_dport '8003'
-    option dest_ip '192.168.10.3'
-    option dest_port '443'
 
 config redirect
     option dest 'lan'
@@ -547,29 +515,11 @@ config redirect
 config redirect
     option dest 'lan'
     option target 'DNAT'
-    option name 'pve-AndroidTV_web'
-    option src 'wan'
-    option src_dport '8004'
-    option dest_ip '192.168.10.4'
-    option dest_port '443'
-
-config redirect
-    option dest 'lan'
-    option target 'DNAT'
     option name 'pve-AndroidTV_adb'
     option src 'wan'
     option src_dport '9004'
     option dest_ip '192.168.10.4'
     option dest_port '5555'
-
-config redirect
-    option dest 'lan'
-    option target 'DNAT'
-    option name 'fnOS_web'
-    option src 'wan'
-    option src_dport '8005'
-    option dest_ip '192.168.10.5'
-    option dest_port '5667'
 
 config redirect
     option dest 'lan'
@@ -592,15 +542,6 @@ config redirect
 config redirect
     option dest 'lan'
     option target 'DNAT'
-    option name 'iRouter_web'
-    option src 'wan'
-    option src_dport '8254'
-    option dest_ip '192.168.10.254'
-    option dest_port '443'
-
-config redirect
-    option dest 'lan'
-    option target 'DNAT'
     option name 'iRouter_ssh'
     option src 'wan'
     option src_dport '9204'
@@ -619,69 +560,6 @@ config redirect
 config redirect
     option dest 'lan'
     option target 'DNAT'
-    option name 'http_proxy'
-    option src 'wan'
-    option src_dport '8102'
-    option dest_ip '192.168.10.1'
-    option dest_port '7890'
-
-config redirect
-    option dest 'lan'
-    option target 'DNAT'
-    option name 'docker_twonav'
-    option src 'wan'
-    option src_dport '8202'
-    option dest_ip '192.168.10.1'
-    option dest_port '8202'
-
-config redirect
-    option dest 'lan'
-    option target 'DNAT'
-    option name 'docker_flask_imgbin'
-    option src 'wan'
-    option src_dport '8204'
-    option dest_ip '192.168.10.1'
-    option dest_port '8204'
-
-config redirect
-    option dest 'lan'
-    option target 'DNAT'
-    option name 'docker_flask_webshell_c'
-    option src 'wan'
-    option src_dport '8214'
-    option dest_ip '192.168.10.1'
-    option dest_port '8214'
-
-config redirect
-    option dest 'lan'
-    option target 'DNAT'
-    option name 'docker_flask_webshell_b'
-    option src 'wan'
-    option src_dport '8224'
-    option dest_ip '192.168.10.1'
-    option dest_port '8224'
-
-config redirect
-    option dest 'lan'
-    option target 'DNAT'
-    option name 'docker_flask_novnc_1'
-    option src 'wan'
-    option src_dport '8234'
-    option dest_ip '192.168.10.1'
-    option dest_port '8234'
-
-config redirect
-    option dest 'lan'
-    option target 'DNAT'
-    option name 'docker_flask_novnc_2'
-    option src 'wan'
-    option src_dport '8244'
-    option dest_ip '192.168.10.1'
-    option dest_port '8244'
-
-config redirect
-    option dest 'lan'
-    option target 'DNAT'
     option name 'xunlei'
     option src 'wan'
     option src_dport '8205'
@@ -691,18 +569,9 @@ config redirect
 config redirect
     option dest 'lan'
     option target 'DNAT'
-    option name 'aipan'
-    option src 'wan'
-    option src_dport '8206'
-    option dest_ip '192.168.10.1'
-    option dest_port '8206'
-
-config redirect
-    option dest 'lan'
-    option target 'DNAT'
     option name 'homeassistant'
     option src 'wan'
-    option src_dport '8207'
+    option src_dport '8123'
     option dest_ip '192.168.10.1'
     option dest_port '8123'
 " >> /etc/config/firewall
