@@ -1,5 +1,4 @@
 #!/bin/sh
-#!/bin/sh
 # OpenWrt系统初始化脚本.sh
 
 
@@ -53,8 +52,9 @@ download_with_retry() {
 
 
 
+
 ########################################################################################################################
-echo "\n修改/dev/sda3挂载为 /data, 当前 分区挂载情况:   #######################################################################"
+echo -e "\n修改/dev/sdb1挂载为 /data, 当前 分区挂载情况:   #######################################################################"
 lsblk -o NAME,FSTYPE,UUID,MOUNTPOINT
 
 uuid=$( lsblk -o NAME,UUID | grep sdb1 | awk '{print $2}')
@@ -68,7 +68,7 @@ if [ ${mounter} == 1 ] && [ ${uuid_exist} == 1 ] ; then
     echo "config mount
        option target '/data'
        option uuid '${uuid}'
-       option enabled '0'" >> /etc/config/fstab
+       option enabled '1'" >> /etc/config/fstab
 
 elif  [ ${mounter} == 0 ] && [ ${uuid_exist} == 1 ]; then
     echo "存在 /data 挂载点, 但是 "${uuid}" 不对, 替换 /etc/config/fstab 文件中/data挂载点的uuid"
@@ -85,7 +85,7 @@ elif  [ ${mounter} == 1 ] && [ ${uuid_exist} == 0 ]; then
 elif  [ ${mounter} == 0 ] && [ ${uuid_exist} == 0 ]; then
     echo "存在 "${uuid}" 的挂载点/data,无需修改/etc/config/fstab文件"
 fi
-
+sed -i "s/option enabled '0'/option enabled '1'/g" /etc/config/fstab
 
 umount /dev/sdb1
 mount /dev/sdb1 /data
@@ -113,8 +113,10 @@ lsblk -o NAME,FSTYPE,UUID,MOUNTPOINT
 
 
 
+
+
 ########################################################################################################################
-echo "\n# 清理残联的docker文件  #############################################################################################"
+echo -e "\n# 清理残联的docker文件  #############################################################################################"
 rm -rf /data/buildkit
 rm -rf /data/containerd
 rm -rf /data/containers
@@ -132,7 +134,7 @@ rm -rf /data/volumes
 
 
 ########################################################################################################################
-echo "\n创建目录 /data/temp, /data/log, /data/app/ddns, /data/docker_home, /data/docker_data  ###############"
+echo -e "\n创建目录 /data/temp, /data/log, /data/app/ddns, /data/docker_home, /data/docker_data  ###############"
 mkdir -p /data/temp
 mkdir -p /data/log
 mkdir -p /data/app/ddns
@@ -144,7 +146,7 @@ mkdir -p /data/docker_data
 
 
 ########################################################################################################################
-echo "\n下载安装 7zip 命令 7zz  到 /data/app/7zz   ##########################################################################"
+echo -e "\n下载安装 7zip 命令 7zz  到 /data/app/7zz   ##########################################################################"
 download_with_retry https://cdn.jsdmirror.com/gh/smnra/pve_config/openwrt/tools/7zip/7zz  /data/app/7zz
 echo "# 使用 cdn加速  fastly.jsdelivr.net 下载 https://smnra.github.io/pve_config/openwrt/tools/7zip/7zz
 
@@ -163,7 +165,7 @@ ln -s /data/app/7zz  /usr/bin/7zz
 
 
 ########################################################################################################################
-echo "\n安装软件包 #########################################################################################################"
+echo -e "\n安装软件包 #########################################################################################################"
 echo 'opkg update'
 opkg update
 
@@ -208,9 +210,6 @@ echo '安装kms软件包'
 opkg install vlmcsd luci-app-vlmcsd
 
 
-
-
-
 ########################################################################################################################
 echo '设置中文语言'
 uci set luci.main.lang='zh_cn'
@@ -221,7 +220,7 @@ uci commit luci
 
 
 ########################################################################################################################
-echo "\n设置 web访问 nginx访问控制列表        ################################################################################"
+echo -e "\n设置 web访问 nginx访问控制列表        ################################################################################"
 if [ -f /etc/nginx/restrict_locally ]; then
     echo '已找到 /etc/nginx/restrict_locally, 为nginx 提供http 服务,修改 nginx访问控制列表 '
     echo "
@@ -249,7 +248,7 @@ fi
 
 
 ########################################################################################################################
-echo '\n开机启动 /etc/rc.local      #######################################################################################'
+echo "\n开机启动 /etc/rc.local      #######################################################################################"
 result=`strInFile 'ddns_update.sh' '/etc/rc.local'`
 echo result: ${result}
 if [ ${result} == 1 ]
@@ -277,7 +276,7 @@ fi
 
 
 ########################################################################################################################
-echo '\n添加到光猫的接口lan_gpon,并配置为dhcp获取ip,并设置mac地址:00:11:22:33:00:01.     ########################################'
+echo "\n添加到光猫的接口lan_gpon,并配置为dhcp获取ip,并设置mac地址:00:11:22:33:00:01.     ########################################"
 result=`strInFile "config interface 'lan_gpon'" '/etc/config/network'`
 echo result: ${result}
 if [ ${result} == 1 ]
@@ -317,7 +316,7 @@ fi
 
 
 ########################################################################################################################
-echo '\n添加静态路由    ####################################################################################################'
+echo "\n添加静态路由    ####################################################################################################"
 result=`strInFile "option interface 'lan_gpon'" '/etc/config/network'`
 if [ ${result} == 1 ]
 then
@@ -347,7 +346,7 @@ fi
 
 
 ########################################################################################################################
-echo '\ndhcp 静态地址   ###################################################################################################'
+echo "\ndhcp 静态地址   ###################################################################################################"
 result=`strInFile "option name 'pve'" '/etc/config/dhcp'`
 echo result: ${result}
 if [ ${result} == 1 ]
@@ -466,7 +465,7 @@ fi
 
 
 ####################################################################################################################
-echo '\n设置备用网关 192.168.10.254'
+echo "\n设置备用网关 192.168.10.254"
 uci set dhcp.lan.dhcp_option='3,192.168.10.1'
 uci add_list dhcp.lan.dhcp_option='217,192.168.10.254'
 uci commit dhcp
@@ -479,7 +478,7 @@ uci commit dhcp
 
 
 ########################################################################################################################
-echo '\n防火墙规则 80** 端口为 lan 网段映射  81** 为openwrt内部端口的映射   82** 为docker端口的映射  最后一位为 ip地址尾数 ############'
+echo "\n防火墙规则 80** 端口为 lan 网段映射  81** 为openwrt内部端口的映射   82** 为docker端口的映射  最后一位为 ip地址尾数 ############"
 echo "
 
 config redirect
@@ -583,7 +582,7 @@ config redirect
 
 
 ########################################################################################################################
-echo "\n设置 wifi  /etc/config/wireless   ################################################################################"
+echo -e "\n设置 wifi  /etc/config/wireless   ################################################################################"
 echo "
 config wifi-device 'radio0'
 	option type 'mac80211'
@@ -618,7 +617,7 @@ wifi reload
 
 
 ########################################################################################################################
-echo '\n配置 微信推送 ######################################################################################################'
+echo -e "\n配置 微信推送 ######################################################################################################"
 
 echo '开始修改 /etc/config/wechatpush'
 echo "config wechatpush 'config'
@@ -669,15 +668,15 @@ echo "启动 wechatpush"
 
 
 ########################################################################################################################
-echo '\n配置 lucky ######################################################################################################'
+echo -e "\n配置 lucky ######################################################################################################"
 
 if [ -f /etc/config/lucky ]; then
-    echo '开始修改 /etc/config/appfilter'
+    echo '开始修改 /etc/config/lucky'
     echo "
     config lucky 'lucky'
         option logger '1'
         option port '16601'
-        option configdir '/data/app/lucky/lucky'
+        option configdir '/etc/lucky'
         option enabled '1'
         option safe 'smnra'
 " > /etc/config/lucky
@@ -685,22 +684,38 @@ else
     echo "未找到 lucky 配置文件 /etc/config/lucky"
 fi
 
+# 重启lucky
+/etc/init.d/lucky restart
 
-if [ -f /etc/lucky ]; then
-    if [ -f /data/app/lucky/lucky.tar.gz ]; then
+
+
+if [ -d /etc/lucky ]; then
+    if [ -f /data/app/lucky/lucky_Linux_x86_64.tar.gz ]; then
+        echo 'lucky软件包更新文件已存在，无需下载'
+    else
+        echo '开始下载lucky软件包更新文件到/data/app/lucky/lucky_Linux_x86_64.tar.gz'
+        download_with_retry https://6.66666.host:66/files/2.15.3/lucky_2.15.3_Linux_x86_64.tar.gz /data/app/lucky/lucky_Linux_x86_64.tar.gz
+    fi
+    tar -zxvf /data/app/lucky/lucky_Linux_x86_64.tar.gz lucky -C /data/app/lucky/lucky/
+    chmod +x /data/app/lucky/lucky/lucky
+    cp /data/app/lucky/lucky/lucky /usr/bin/lucky
+    rm -rf /data/app/lucky/lucky/lucky
+
+    if [ -f /data/app/lucky/lucky_config.zip ]; then
         echo 'lucky配置文件已存在，无需下载'
     else
         echo '开始下载lucky配置文件到/etc/lucky'
-        download_with_retry https://smnra.github.io/pve_config/openwrt/lucky/lucky.tar.gz /data/app/lucky/lucky.tar.gz
+        download_with_retry https://smnra.github.io/pve_config/openwrt/lucky/lucky_config.zip /data/app/lucky/lucky_config.zip
     fi
     echo '开始解压lucky配置文件 /etc/lucky/'
-    tar -zxvf /data/app/lucky/lucky.tar.gz -C /data/app/lucky/
+    unzip -o /data/app/lucky/lucky_config.zip -d /data/app/lucky/lucky/
     cp -rf /data/app/lucky/lucky/* /etc/lucky/
 else
     echo "未找到 lucky 配置文件 /etc/lucky目录"
 fi
 
-
+echo "启动 lucky"
+/etc/init.d/lucky start
 ########################################################################################################################
 
 
@@ -712,9 +727,8 @@ fi
 
 
 
-
 ########################################################################################################################
-echo "\n设置zerotier /etc/config/zerotier   secret 选项可能是控制 mac 地址的，需要固定  ########################################"
+echo -e "\n设置zerotier /etc/config/zerotier   secret 选项可能是控制 mac 地址的，需要固定  ########################################"
 
 echo "
 config zerotier 'sample_config'
@@ -733,10 +747,10 @@ config zerotier 'sample_config'
 
 
 ######################################################################################################################
-echo '\nDNS助手配置  /etc/config/my-dnshelper   ############################################################################'
+echo "\nDNS助手配置  /etc/config/my-dnshelper   ############################################################################"
 echo "
 config my-dnshelper
-    option enable '0'
+    option enable '1'
     option autoupdate '1'
     option flash '1'
     option use_doh '0'
@@ -774,7 +788,7 @@ config my-dnshelper
 
 
 ########################################################################################################################
-echo '\n设置DDNS 更新 #####################################################################################################'
+echo "\n设置DDNS 更新 #####################################################################################################"
 # 删除源有配置
 uci del ddns.myddns_ipv4
 uci del ddns.myddns_ipv6
@@ -947,7 +961,7 @@ sleep 10
 
 ########################################################################################################################
 # 计划任务 crontab 添加ddns 每小时更新; 每天凌晨4点重启系统; 每小时释放内存;
-echo "\ncrontab   添加计划任务  ############################################################################################"
+echo -e "\ncrontab   添加计划任务  ############################################################################################"
 echo 'Crontab  添加ddns 每小时更新ddns '
 result=`strInFile "ddns_update.sh" '/etc/crontabs/root'`
 if [ ${result} == 1 ]
@@ -989,7 +1003,7 @@ fi
 
 
 ########################################################################################################################
-echo "\nopenvpn 配置    ###################################################################################################"
+echo -e "\nopenvpn 配置    ###################################################################################################"
 echo "创建openvpn证书文件目录 /etc/openvpn/pki"
 mkdir -p /etc/openvpn/pki
 
@@ -1746,7 +1760,7 @@ sleep 5
 
 
 ########################################################################################################################
-echo "\n设置 openclash  ###################################################################################################"
+echo -e "\n设置 openclash  ###################################################################################################"
 mkdir -p /etc/openclash/config /etc/openclash/core
 
 # openclash 配置文件
@@ -2124,7 +2138,7 @@ echo "重启 openclash "
 
 ########################################################################################################################
 # /etc/config/dockerd
-echo "\n配置docker.     ###################################################################################################"
+echo -e "\n配置docker.     ###################################################################################################"
 uci set dockerd.globals.data_root='/data/docker_home'
 uci add_list dockerd.globals.registry_mirrors="https://docker.m.daocloud.io"
 uci add_list dockerd.globals.registry_mirrors="https://docker.1ms.run"
@@ -2156,16 +2170,24 @@ else
 fi
 
 
-# echo "docker 镜像下载"
-# docker pull tznb/twonav:latest
-# docker pull smnrao/python_flask_docker:latest
-# docker pull fooololo/aipan-netdisk-search:latest
-# docker pull homeassistant/home-assistant:latest
-#
+
+if [ -f /data/docker_tar/twonav_latest.tar ]; then
+    echo "存在 docker_tar/*.tar 镜像文件,跳过下载,开始导入镜像."
+    for file in /data/docker_tar/*.tar; do
+        echo "导入镜像文件 $file"
+        docker load -i $file
+    done
+else
+    echo "docker 镜像下载"
+    docker pull tznb/twonav:latest
+    docker pull smnrao/python_flask_docker:latest
+    docker pull fooololo/aipan-netdisk-search:latest
+    docker pull homeassistant/home-assistant:latest
+fi
 
 echo "启动docker-compose 服务"
 cd  /data/docker_data/
-docker-compose -f /data/docker/docker_data/docker-compose.yml up -d
+docker-compose -f /data/docker_data/docker-compose.yml up -d
 echo "等待docker-compose 服务启动完成"
 
 
