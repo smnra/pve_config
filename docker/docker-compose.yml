@@ -86,12 +86,13 @@ services:
        max-file: "5"
 
 
-  homeassistant:
-    image: homeassistant/home-assistant:latest
-    container_name: homeassistant
+  powercontrol:
+    image: viklion/powercontrol:latest
+    container_name: powercontrol
     volumes:
-      - /data/docker_data/homeassistant/config:/config
-#    ports:
-#      - "8123:8123"
-    restart: always
+      - /data/docker_data/powercontrol/data:/app/data
+    environment:
+      - WEB_PORT=8207
+      - WEB_KEY=9ef67c0f33d540288f67da78d94d675b
+    restart: unless-stopped
     network_mode: host
