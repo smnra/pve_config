@@ -1,0 +1,16 @@
+123pan.com###app > div.ant-spin-nested-loading.global-loading > div.ant-spin-container > div > div.appdiv.web-wrap > div.banner-container-pc:nth-child(3) > div.banner_all_wrap
+vpn.snunicom.com###app_dialog_container
+vpn.snunicom.com##div.dialog-mask:nth-child(5)
+pythonheidong.com###layui-layer1
+pythonheidong.com###layui-layer-shade1
+blog.51cto.com###login_iframe_mask
+vpn.snunicom.com##div.dialog-mask:nth-child(6)
+fanyi.caiyunapp.com###app > div.app > div.fanyi-containers.router:last-child > div.scrollable-content:last-child > div:first-child > div.active-imgContainer:last-child
+vpn.snunicom.com##div.ix-modal-container:nth-child(75)
+tieba.baidu.com###_undefined > div.error-wrap:last-child
+520xv.com##div.huliku-float:nth-child(19) > div.huliku-float-box
+520xv.com##div.container.fluid-widget:nth-child(5)
+520xv.com##div.header-slider-container.relative.mb20.card-4.filter-blur:nth-child(4) > div.relative.zib-slider:first-child > div.new-swiper.slide-index.slide-header.swiper-container-initialized > div.swiper-wrapper > div.swiper-slide > a
+520xv.com##div.header-slider-container.relative.mb20.card-4.filter-blur:nth-child(4) > div.header-slider-search.abs-center:nth-child(2) > div.search-input:last-child > div.search-keywords:last-child
+520xv.com##div.container.fluid-widget:nth-child(6)
+520xv.com##div.header-slider-container.relative.mb20.card-4.filter-blur:nth-child(5) > div.header-slider-card.container:last-child
