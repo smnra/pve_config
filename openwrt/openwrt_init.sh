@@ -169,6 +169,11 @@ echo -e "\n安装软件包 #####################################################
 echo 'opkg update'
 opkg update
 
+echo 'tar 软件包安装.'
+opkg install tar
+
+
+
 # iw-full kmod-mt7921e hostapd-openssl luci-app-openvpn-server luci-app-ddns luci-app-wechatpush luci-app-oaf luci-app-partexp
 # lucky luci-app-lucky luci-app-zerotier tvhelper qemu-ga
 
